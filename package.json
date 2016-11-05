@@ -1,0 +1,20 @@
+{
+  "name": "api",
+  "version": "0.0.1",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "addressparser": "^1.0.1",
+    "axolot": "^1.0.0",
+    "emailreplyparsertotango": "^0.0.9",
+    "imap-simple": "^3.0.0",
+    "jsonwebtoken": "^7.1.9",
+    "passport": "^0.3.2",
+    "sails-mongo": "^0.12.1"
+  },
+  "devDependencies": {
+    "gulp": "*",
+    "gulp-nodemon": "*"
+  }
+}
