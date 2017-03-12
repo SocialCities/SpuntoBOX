@@ -147,9 +147,9 @@ aws4@^1.2.1:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/aws4/-/aws4-1.5.0.tgz#0a29ffb79c31c9e712eeb087e8e7a64b4a56d755"
 
-axolot@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/axolot/-/axolot-1.0.0.tgz#0a4c417bed9bed87291b6e0e0eca9423ac7071b9"
+axolot:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/axolot/-/axolot-1.0.2.tgz#1d61ace22ded1ee8d1ce95622614fef2e78b691a"
   dependencies:
     bcrypt "^0.8.7"
     body-parser "^1.15.2"

@@ -10,7 +10,7 @@ module.exports = {
     bodyHTML: { type: 'string'},
     attachments: { type: 'array'},
     date: { type: 'datetime', required: true },
-    subject: { type: 'string', required: true },
+    subject: { type: 'string' },
     from: { type: 'json', required: true },
     negotiation: { model: 'negotiations' }
   }

@@ -107,7 +107,7 @@ class EmailFetcher {
   }
 
   _prepareSearch(account) {
-    return ['8:10'];
+    return ['11:12'];
   }
 };
 

@@ -34,6 +34,20 @@ module.exports = {
         var accessToken = Service.token.sign({ id: user.id, scopes: user.scopes });
         return res.json({ accessToken: accessToken, id: user.id, email: user.email, name: user.name });
       });
-    }
+    },
+    'get /me': [checkScopes(['user']),function (req, res, nect) {
+      let u;
+      Model.users.findOne(req.user).then((user) => {
+        u = user;
+        return Model.accounts.find({select: ['id', 'name', 'email'], where: {id: user.accounts}})
+      }).then((accounts) => {
+        u.accounts = accounts
+        res.send(u);
+      })
+      .catch((err) => {
+        console.log(err);
+
+      })
+    }]
   }
 };

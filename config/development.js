@@ -6,7 +6,7 @@ var rootPath = require('path').normalize(__dirname + '/..');
 exports.app = {
     root: rootPath,
     name: 'api',
-    port: process.env.PORT || 3000
+    port: process.env.PORT || 4000
 };
 
 // Secrets

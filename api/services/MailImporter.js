@@ -8,7 +8,7 @@ class MailImporter {
       if (!negotiation) {
         return this.createNewNegotiation(account, mail);
       }
-      
+
       return this.saveMail(account, mail, negotiation);
     }).catch((err) => {
       console.log('mega mega error', err);
@@ -30,8 +30,9 @@ class MailImporter {
 
       return Model.negotiations.create(negotiation);
     }).then((negotiation) => {
+      console.log('negotiation', negotiation)
       if (negotiation) {
-        this.saveMail(account, mail, negotiation)
+        return this.saveMail(account, mail, negotiation)
       }
     });
   }
