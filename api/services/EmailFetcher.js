@@ -27,6 +27,8 @@ class EmailFetcher {
     }).then((messages) => {
       var attachments = [];
       messages.forEach((message) => {
+        if (message.attributes.uid <= account.latestUid) return;
+
         mails[message.attributes.uid] = this._generateMailData(message);
 
         attachments = attachments.concat(this._parseMessage(connection, message));
@@ -100,14 +102,14 @@ class EmailFetcher {
   _prepareText(message, part, partData) {
     return {
       type: part.subtype === 'html' ? 'html' : 'text',
-      reply: part.subtype === 'plain' ? emailreplyparsertotango.parse_reply(partData) : null,
+      reply: part.subtype === 'plain' ? emailreplyparsertotango.parse_reply(typeof partData === 'object' ? '' : (partData || '')) : null,
       text: partData,
       uid: message.attributes.uid,
     };
   }
 
   _prepareSearch(account) {
-    return ['11:12'];
+    return [(account.latestUid + 1) +  ':*']; //NOTE: latestUid is the latest one we saved, so we need to start from the next one
   }
 };
 

@@ -9,7 +9,8 @@ module.exports = {
     imap: { type: 'json', required: true},
     smtp: { type: 'json', required: true},
     lastCheck: { type: 'datetime'},
-    latestChecked: { type: 'string'}
+    latestChecked: { type: 'string'},
+    latestUid: {type: 'integer', defaultsTo: 0}
   }
 
 };

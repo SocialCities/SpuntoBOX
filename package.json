@@ -8,8 +8,11 @@
     "addressparser": "^1.0.1",
     "axolot": "^1.0.2",
     "emailreplyparsertotango": "^0.0.9",
+    "html-to-text": "^3.2.0",
     "imap-simple": "^3.0.0",
     "jsonwebtoken": "^7.1.9",
+    "nodemailer": "^3.1.5",
+    "nodemailer-html-to-text": "^2.1.0",
     "passport": "^0.3.2",
     "sails-mongo": "^0.12.1"
   },

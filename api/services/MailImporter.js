@@ -1,3 +1,5 @@
+var htmlToText = require('html-to-text');
+
 class MailImporter {
   constructor() {
 
@@ -11,6 +13,7 @@ class MailImporter {
 
       return this.saveMail(account, mail, negotiation);
     }).catch((err) => {
+      console.log('MAIL', mail)
       console.log('mega mega error', err);
     });
   }
@@ -38,8 +41,12 @@ class MailImporter {
   }
 
   saveMail(account, mail, negotiation) {
+
     mail.account = account.id;
     mail.negotiation = negotiation.id;
+    if (!mail.body || mail.body.length === 0) {
+      mail.body = htmlToText.fromString(mail.bodyHTML);
+    }
     return Model.mails.create(mail);
   }
 }
