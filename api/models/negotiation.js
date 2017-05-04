@@ -5,7 +5,7 @@ module.exports = {
 
   attributes: {
     account: { model: 'accounts', required: true },
-    client: { mode: 'clients' },
+    client: { model: 'clients' },
     status: { type: 'string', enum: ['pending', 'approved', 'denied'] },
     email: { type: 'string' },
     name: { type: 'string' }

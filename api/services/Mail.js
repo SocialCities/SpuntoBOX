@@ -3,28 +3,29 @@ var htmlToText = require('nodemailer-html-to-text').htmlToText;
 
 module.exports = {
   sendEmail: function (email, config) {
-    var transporter = nodemailer.createTransport('smtp', {
+    var transporter = nodemailer.createTransport({
       service: config.service,
       auth: {
           user: config.user,
           pass: config.password
       }
     });
+
     transporter.use('compile', htmlToText());
     
-
     return new Promise((res, rej) => {
       transporter.sendMail({
         from: email.from,
         to: email.to,
-        html: email.text,
-        subject: email.title,
+        cc: email.cc,
+        bcc: email.bcc,
+        html: email.bodyHTML,
+        subject: email.subject,
         attachments: email.attachments || []
       }, (value, err) => {
-        console.log(value)
-        console.log('err')
-        console.log(err)
-        return res();
+        if (err && !err.messageId) return rej(err);
+
+        return res(err);
       });
     });
   },

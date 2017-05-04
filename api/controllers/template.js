@@ -4,7 +4,7 @@ module.exports = {
   path: '/templates',
   actions: {
     'get /:account': [function(req, res, next) {
-      Model.templates.find({account: req.params.account}).then((templates) => {
+      Model.templates.find({account: req.params.account}).sort('createdAt DESC').then((templates) => {
         res.send(templates);
       }).catch((err) => {
         console.log('templates Error', err);

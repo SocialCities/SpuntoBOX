@@ -11,7 +11,11 @@ module.exports = {
     attachments: { type: 'array'},
     date: { type: 'datetime', required: true },
     subject: { type: 'string' },
-    from: { type: 'json', required: true },
-    negotiation: { model: 'negotiations' }
+    from: { type: 'json' },
+    negotiation: { model: 'negotiations' },
+    type: {type: 'string' },
+    replyTo: {model: 'mails' },
+    groups: { type: 'json' },
+    log: {type: 'json'}
   }
 };

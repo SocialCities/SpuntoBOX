@@ -7,9 +7,9 @@ class MailImporter {
 
   saveSingleMail(account, mail) {
     return Model.negotiations.findOne({ where: {email: mail.from.address, status: 'pending', account: account.id}}).then((negotiation) => {
-      if (!negotiation) {
-        return this.createNewNegotiation(account, mail);
-      }
+      // if (!negotiation) {
+      //   return this.createNewNegotiation(account, mail);
+      // }
 
       return this.saveMail(account, mail, negotiation);
     }).catch((err) => {
@@ -43,10 +43,14 @@ class MailImporter {
   saveMail(account, mail, negotiation) {
 
     mail.account = account.id;
-    mail.negotiation = negotiation.id;
+    if (negotiation) {
+      mail.negotiation = negotiation.id;
+    }
     if (!mail.body || mail.body.length === 0) {
       mail.body = htmlToText.fromString(mail.bodyHTML);
     }
+    mail.type = 'received';
+    
     return Model.mails.create(mail);
   }
 }
