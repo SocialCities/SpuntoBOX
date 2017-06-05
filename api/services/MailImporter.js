@@ -53,6 +53,11 @@ class MailImporter {
     let savedMail;
     return Model.mails.create(mail).then(m => {
       savedMail = m;
+      if (!negotiation) {
+        return new Promise((resolve, reject) => {
+          resolve(savedMail);
+        });
+      }
       let negotiationEntry = {
         negotiation: negotiation.id,
         account: savedMail.account,
