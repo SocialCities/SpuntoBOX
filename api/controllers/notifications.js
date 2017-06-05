@@ -12,7 +12,7 @@ module.exports = {
           if (user) {
             if (user.accounts.indexOf(accountId) !== -1) {
               this.socket.join('account-' + accountId);
-              console.log('joined')
+              Service.CronEmailFetcherManager.createCronjob(accountId);
             }
             
           }

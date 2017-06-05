@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
 
-  identity: 'negotiations',
+  identity: 'negotiationEntries',
 
   attributes: {
     account: { model: 'accounts', required: true },
@@ -9,8 +9,10 @@ module.exports = {
     status: { type: 'string', enum: ['pending', 'approved', 'denied'] },
     email: { type: 'string' },
     name: { type: 'string' },
-    subject: {type: 'string'},
+    content: {type: 'string'},
     source: { type: 'string', enum: ['internet', 'phone', 'email'] },
-    type: { type: 'string' }
+    subject: { type: 'string'},
+    negotiation: {model: 'negotiations'},
+    mail: {type: 'object'}
   }
 };

@@ -50,8 +50,25 @@ class MailImporter {
       mail.body = htmlToText.fromString(mail.bodyHTML);
     }
     mail.type = 'received';
-    
-    return Model.mails.create(mail);
+    let savedMail;
+    return Model.mails.create(mail).then(m => {
+      savedMail = m;
+      let negotiationEntry = {
+        negotiation: negotiation.id,
+        account: savedMail.account,
+        status: 'approved',
+        subject: savedMail.subject,
+        email: savedMail.from.address,
+        name: savedMail.from.name,
+        source: 'email',
+        mail: savedMail
+      }
+      return Model.negotiationentries.create(negotiationEntry);
+    }).then(ne => {
+      return new Promise((resolve, reject) => {
+        resolve(savedMail);
+      });
+    }); 
   }
 }
 

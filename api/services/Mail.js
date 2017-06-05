@@ -2,14 +2,25 @@ var nodemailer = require('nodemailer');
 var htmlToText = require('nodemailer-html-to-text').htmlToText;
 
 module.exports = {
-  sendEmail: function (email, config) {
-    var transporter = nodemailer.createTransport({
-      service: config.service,
-      auth: {
-          user: config.user,
-          pass: config.password
-      }
-    });
+    getTransportConfig: function(config) {
+        let cfg = {
+            auth: {
+                user: config.user,
+                pass: config.password
+            }
+        };
+        if (config.service && config.service != 'smtp') {
+            cfg.service = config.service;
+        } else {
+            cfg.host = config.host;
+            cfg.port = config.port;
+            cfg.secure = false; //config.tls;
+        }
+
+        return cfg;
+    },
+    sendEmail: function (email, config) {
+    var transporter = nodemailer.createTransport(this.getTransportConfig(config));
 
     transporter.use('compile', htmlToText());
     
@@ -23,6 +34,8 @@ module.exports = {
         subject: email.subject,
         attachments: email.attachments || []
       }, (value, err) => {
+          console.log(value)
+          console.log(err)
         if (err && !err.messageId) return rej(err);
 
         return res(err);
