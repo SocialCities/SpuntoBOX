@@ -11,7 +11,7 @@ module.exports = {
     address: { type: 'string' },
     city: { type: 'string' },
     country: { type: 'string' },
-    birthday: { type: 'datetime' },
+    birthday: { type: 'string' },
     documentType: { type: 'string' },
     documentNumber: { type: 'string' },
     documentExpiry: { type: 'string' },
