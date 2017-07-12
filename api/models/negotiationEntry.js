@@ -10,6 +10,7 @@ module.exports = {
     email: { type: 'string' },
     name: { type: 'string' },
     content: {type: 'string'},
+    contentHtml: {type: 'string'},
     source: { type: 'string', enum: ['internet', 'phone', 'email'] },
     subject: { type: 'string'},
     negotiation: {model: 'negotiations'},
