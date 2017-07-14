@@ -1,6 +1,15 @@
 'use strict';
 var htmlToText = require('html-to-text');
 
+function addCustomer(e, account) {
+  console.log('add fucking customer')
+  Model.customers.create({email: e, account: account}).then((em) => {
+    console.log(em)
+  }).catch(err => {
+    console.log('err', err)
+  })
+}
+
 module.exports = {
   path: '/emails',
   actions: {
@@ -44,11 +53,26 @@ module.exports = {
       emails = emails.concat(req.body.cc || []);
       emails = emails.concat(req.body.bcc || []);
       let groups = {}; 
-      Model.customers.find({email: emails}).then((customers) => {
+      let toAdd = {}
+      Model.customers.find({email: emails, account: req.params.accountId}).then((customers) => {
         customers.forEach((c) => {
           if (c.group) groups[c.group] = true;
         });
-
+        console.log('looking for customers')
+        emails.forEach(e => {
+          console.log('looking for customer: ', e)
+          let found = false;
+          customers.forEach(c => {
+            if (e === c.email) {
+              console.log('customer found: ', e);
+              found = true;
+            }
+          });
+          if (found === false) {
+            console.log('customer not found: ', e)
+            addCustomer(e, req.params.accountId);
+          }
+        })
         console.log('contentHtml', req.body.contentHtml);
         console.log(htmlToText.fromString(req.body.contentHtml));
         email.account = req.params.accountId;
