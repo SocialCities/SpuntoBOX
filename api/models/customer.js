@@ -24,7 +24,8 @@ module.exports = {
     mobilePhoneExtra: { type: 'string' },
     optOut: {type: 'boolean', defaultsTo: false },
     negotiations: { type: 'array', defaultsTo:[]},
-    latestCheckin: { type: 'datetime' }
+    latestCheckin: { type: 'datetime' },
+    optin: {type: 'boolean', defaultsTo: true}
   }
 
 };
