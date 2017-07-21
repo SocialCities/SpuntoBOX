@@ -91,6 +91,7 @@ module.exports = {
         }
         return Model.accounts.findOne(req.params.accountId);
       }).then((account) => {
+        email.from = account.email;
         return Service.Mail.sendEmail(email, account.smtp);
       }).then((receipt) => {
         email.log = receipt;
