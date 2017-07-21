@@ -127,7 +127,11 @@ module.exports = {
     }],
     
     'get /:accountId': [function (req, res, next) {
-      Model.mails.find({account: req.params.accountId, negotiation: null}).sort('createdAt DESC').then((mails) => {
+      let query = {account: req.params.accountId, negotiation: null};
+      if (req.query.type) {
+        query.type = req.query.type;
+      }
+      Model.mails.find(query).sort('createdAt DESC').then((mails) => {
         res.send(mails);
       }).catch((err) => {
         console.log('mails Error', err);
