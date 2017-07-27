@@ -14,6 +14,15 @@ module.exports = {
         query.group = req.query.zone;
       }
 
+      let content = req.query.content;
+      if (content) {
+        query.or = [
+          { name: {'contains': content} },
+          { "body.it": {'contains': content} },
+          { "body.en": {'contains': content}}        
+        ];
+      }
+
       Model.templates.find(query).sort('createdAt DESC').then((templates) => {
         res.send(templates);
       }).catch((err) => {
@@ -29,6 +38,13 @@ module.exports = {
         console.log('templates Error', err);
       })
     }],
+    'get /:account/:templateId': [function(req, res, next) {
+      Model.templates.findOne({account: req.params.account, id: req.params.templateId}).then((template) => {
+        res.send(template);
+      }).catch((err) => {
+        console.log('templates Error', err);
+      })
+    }],
     'post /:account': [function(req, res, next) {
       console.log(req.body)
       let customer = req.body;
@@ -40,7 +56,16 @@ module.exports = {
       }).catch((err) => {
         console.log('template Error', err);
       })
-    }]
+    }],
+    'put /:account/:templateId': [function(req, res, next) {
+      let data = req.body;
+      Model.templates.update({account: req.params.account, id: req.params.templateId}, data).then((template) => {
+
+        res.send(template);
+      }).catch((err) => {
+        console.log('templates Error', err);
+      })
+    }],
   },
 
   sockets: {

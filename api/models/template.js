@@ -8,6 +8,7 @@ module.exports = {
     name: { type: 'string', required: true},
     description: { type: 'string'},
     body: { type: 'json', required: true },
-    group: { type: 'string', required: true}
+    group: { type: 'string', required: true},
+    type: {type: 'string'}
   }
 };
