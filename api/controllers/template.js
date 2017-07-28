@@ -3,11 +3,47 @@
 module.exports = {
   path: '/templates',
   actions: {
+    'get /:accountId/search-side': [function(req, res, next) {
+      console.log('queryyyy', req.query)
+      let query = {account: req.params.accountId}
+      if (req.query.language) {
+        query['body.' + req.query.language] = {$exists: true};
+      }
+
+      if (req.query.zone) {
+        query.group = req.query.zone;
+      }
+
+      let content = req.query.content;
+      if (content) {
+        query.or = [
+          { name: {'contains': content} },
+          { "body.it": {'contains': content} },
+          { "body.en": {'contains': content}}        
+        ];
+      }
+
+      Model.templates.find(query).sort('createdAt DESC').then((templates) => {
+        let tpls = [];
+        templates.forEach( t => {
+          if (req.query.language) {
+            t.body = t.body[req.query.language];
+            tpls.push(t);
+          } else {
+            tpls.push(t);
+          }
+        });
+        res.send(tpls);
+      }).catch((err) => {
+        res.status(500).send({error: 'Error retrieving the templates'});
+        console.log('templates Error', err);
+      })
+    }],
     'get /:accountId/search': [function(req, res, next) {
       console.log('queryyyy', req.query)
       let query = {account: req.params.accountId}
       if (req.query.language) {
-        query.language = req.query.language;
+        query['body.' + req.query.language] = {$exists: true};
       }
 
       if (req.query.zone) {
