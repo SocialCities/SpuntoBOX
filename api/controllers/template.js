@@ -46,8 +46,8 @@ module.exports = {
         query['body.' + req.query.language] = {$exists: true};
       }
 
-      if (req.query.zone) {
-        query.group = req.query.zone;
+      if (req.query.type) {
+        query.type = req.query.type;
       }
 
       let content = req.query.content;
