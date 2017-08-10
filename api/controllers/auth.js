@@ -18,7 +18,7 @@ function login(req, cb) {
     loginEmailPassword(req, email, password, cb);
   } else if (token) {
     loginEmailPassword(req, token, cb);
-  }
+  } else cb("no data provided")
 }
 
 module.exports = {

@@ -48,6 +48,7 @@ module.exports = {
       Model.customers.find(query).then((customers) => {
         customers = customers.map((c) => {
           return {
+            user: true,
             optin: c.optin || false,
             value: c.email,
             text: c.name + ' ' + c.surname + ' <' + c.email + '>'

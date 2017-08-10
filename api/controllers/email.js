@@ -1,5 +1,6 @@
 'use strict';
 var htmlToText = require('html-to-text');
+var Mustache = require("mustache")
 
 function addCustomer(e, account) {
   console.log('add fucking customer')
@@ -52,8 +53,8 @@ module.exports = {
       emails = emails.concat(req.body.to || []);
       emails = emails.concat(req.body.cc || []);
       emails = emails.concat(req.body.bcc || []);
-      let groups = {}; 
-      let toAdd = {}
+      let groups = {};
+      let toAdd = {};
       Model.customers.find({email: emails, account: req.params.accountId}).then((customers) => {
         customers.forEach((c) => {
           if (c.group) groups[c.group] = true;
@@ -75,10 +76,32 @@ module.exports = {
         })
         console.log('contentHtml', req.body.contentHtml);
         console.log(htmlToText.fromString(req.body.contentHtml));
+        let body = req.body.contentHtml;
+        if (req.body.contentHtml.match(/{{\s*[\w\.]+\s*}}/).length > 0) {
+          if (req.body.to.length > 1) {
+            return new Promise((resolve, reject) => {
+                reject("Email ha tags, non puo' essere inviata a piu' persone.")
+            });
+          }
+          let emailToFind = req.body.to[0];
+          let cust = false;
+          customers.forEach((c) => {
+            if (emailToFind === c.email) {
+              cust = {
+                nome: c.name,
+                cognome: c.surname
+              };
+            }
+          });
+          if (cust!== false) {
+            body = Mustache.render(body, {cliente: cust});
+          }
+        }
+        
         email.account = req.params.accountId;
-        email.body = htmlToText.fromString(req.body.contentHtml);
+        email.body = htmlToText.fromString(body);
         email.fullBody = email.body;
-        email.bodyHTML = req.body.contentHtml;
+        email.bodyHTML = body;
         email.subject = req.body.subject;
         email.date = new Date();
         email.to = req.body.to;
@@ -86,6 +109,7 @@ module.exports = {
         email.bcc = req.body.bcc;
         email.type = 'sent';
         email.groups = groups;
+        email.draft = false;
         if (req.body.replyTo) {
           email.replyTo = req.body.replyTo;
         }
@@ -103,6 +127,48 @@ module.exports = {
         console.log('mails Error', err);
       })
     }],
+    'post /:accountId/drafts': [function (req, res, next) {
+      if (req.body.id) {
+        let dr;
+        Model.drafts.findOne({id: req.body.id}).then((draft) => {
+          draft.state = req.body.state;
+          dr = draft;
+          return draft.save();
+        }).then((d) => {
+          res.send(dr);
+        }).catch((err) => {
+          console.log('mails drafts Error', err);
+        })
+      } else {
+        let data = {
+          account: req.params.accountId,
+          state: req.body.state
+        };
+        Model.drafts.create(data).then((draft) => {
+          res.send(draft);
+        }).catch((err) => {
+          console.log('mails drafts Error', err);
+        })
+      }
+      
+    }],
+    'get /:accountId/drafts': [function (req, res, next) {
+      let query = {account: req.params.accountId}
+      Model.drafts.find(query).sort('createdAt DESC').then((drafts) => {
+        res.send(drafts);
+      }).catch((err) => {
+        console.log('mails drafts Error', err);
+      })
+    }],
+    'get /:accountId/drafts/:draftId': [function (req, res, next) {
+      let query = {account: req.params.accountId, id: req.params.draftId};
+
+      Model.drafts.findOne(query).then((draft) => {
+        res.send(draft);
+      }).catch((err) => {
+        console.log('mails drafts Error', err);
+      })
+    }],
     'get /:accountId/search/:content?': [function (req, res, next) {
       console.log('here')
       let query = {account: req.params.accountId, negotiation: null}
@@ -117,6 +183,12 @@ module.exports = {
           { 'bcc': {'contains': req.params.content}},
         ];
       }
+      if (req.query.draft) {
+        query.draft = true;
+      } else {
+        query.draft = {$ne: true};
+      }
+
       if (req.query.group) {
         query.groups = {[req.query.group]: true};
       }
@@ -131,6 +203,11 @@ module.exports = {
       let query = {account: req.params.accountId, negotiation: null};
       if (req.query.type) {
         query.type = req.query.type;
+      }
+      if (req.query.draft) {
+        query.draft = true;
+      } else {
+        query.draft = {$ne: true};
       }
       Model.mails.find(query).sort('createdAt DESC').then((mails) => {
         res.send(mails);

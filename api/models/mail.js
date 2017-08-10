@@ -16,6 +16,7 @@ module.exports = {
     type: {type: 'string' },
     replyTo: {model: 'mails' },
     groups: { type: 'json' },
-    log: {type: 'json'}
+    log: {type: 'json'},
+    draft: {type: 'boolean', defaultsTo: false}
   }
 };
