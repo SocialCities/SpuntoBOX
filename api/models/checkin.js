@@ -8,6 +8,7 @@ module.exports = {
     status: { type: 'string', required: true, defaultsTo: 'in-hotel' },
     guests: { type: 'array', required: true},
     roomNumber: {type: 'string' },
+    plate: {type: 'string'},
     checkinDate: {type: 'datetime'},
     checkoutDate: {type: 'datetime'},
     daysInterview: {type: 'string'},

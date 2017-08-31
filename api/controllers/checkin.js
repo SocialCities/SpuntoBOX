@@ -75,13 +75,15 @@ module.exports = {
         console.log('checkin Error', err);
       })
     }],
-    'put /:account/:customerId': [function(req, res, next) {
-      Model.customers.update({account: req.params.account, id: req.params.customerId}, req.body).then((customer) => {
-        console.log('customer')
-        console.log(customer)
-        res.send(customer);
+    'put /:account/:checkinId': [function(req, res, next) {
+      let checkinData = req.body;
+      checkinData.daysInterview = parseInt(checkinData.daysInterview || 0);
+      Model.checkins.update({account: req.params.account, id: req.params.checkinId}, checkinData).then((checkin) => {
+        console.log('checkin')
+        console.log(checkin)
+        res.send(checkin);
       }).catch((err) => {
-        console.log('customers Error', err);
+        console.log('checkin Error', err);
       })
     }],
     'delete /:account/:customerId': [function(req, res, next) {
