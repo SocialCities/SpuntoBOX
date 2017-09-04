@@ -17,8 +17,16 @@ module.exports = {
         c = customer;
         Object.keys(i.body).forEach((key) => {
           let l = i.body[key]
-          l.header = Mustache.render(l.header || '', {cliente: c});
-          l.footer = Mustache.render(l.footer || '', {cliente: c});
+          let cust = {}
+          if (c) {
+            cust = {
+              nome: c.name,
+              cognome: c.surname
+            };
+          }
+          
+          l.header = Mustache.render(l.header || '', {cliente: cust});
+          l.footer = Mustache.render(l.footer || '', {cliente: cust});
           i.body[key] = l;
         });
         
