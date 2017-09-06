@@ -77,7 +77,7 @@ module.exports = {
         console.log('contentHtml', req.body.contentHtml);
         console.log(htmlToText.fromString(req.body.contentHtml));
         let body = req.body.contentHtml;
-        if (req.body.contentHtml.match(/{{\s*[\w\.]+\s*}}/).length > 0) {
+        if (req.body.contentHtml.match(/{{\s*[\w\.]+\s*}}/) !== null) {
           if (req.body.to.length > 1) {
             return new Promise((resolve, reject) => {
                 reject("Email ha tags, non puo' essere inviata a piu' persone.")

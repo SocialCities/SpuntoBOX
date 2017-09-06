@@ -119,6 +119,17 @@ module.exports = {
         console.log('interview Error', err);
       })
     }],
+    'delete /:account/:interviewId': [function(req, res, next) {
+      let interview = req.body;
+      interview.account = req.params.account;
+      Model.interviews.destroy({id: req.params.interviewId, account: req.params.account}).then((interview) => {
+        console.log('interview')
+        console.log(interview)
+        res.send(interview);
+      }).catch((err) => {
+        console.log('interview Error', err);
+      })
+    }]
   },
 
   sockets: {
