@@ -1,5 +1,7 @@
 var nodemailer = require('nodemailer');
 var htmlToText = require('nodemailer-html-to-text').htmlToText;
+var mainConfig = require('axolot/config/config');
+var path = require('path');
 
 module.exports = {
     getTransportConfig: function(config) {
@@ -23,7 +25,7 @@ module.exports = {
     var transporter = nodemailer.createTransport(this.getTransportConfig(config));
 
     transporter.use('compile', htmlToText());
-    
+    console.log('email', email)
     return new Promise((res, rej) => {
       transporter.sendMail({
         from: email.from,
@@ -32,7 +34,12 @@ module.exports = {
         bcc: email.bcc,
         html: email.bodyHTML,
         subject: email.subject,
-        attachments: email.attachments || []
+        attachments: (email.attachments || []).map(a => {
+            return {   // file on disk as an attachment
+                filename: a.filename,
+                path: path.join(mainConfig.upload.path, a.savedFile) // stream this file
+            };
+        })
       }, (value, err) => {
           console.log(value)
           console.log(err)

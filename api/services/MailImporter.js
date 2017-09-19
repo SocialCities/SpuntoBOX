@@ -41,17 +41,26 @@ class MailImporter {
   }
 
   saveMail(account, mail, negotiation) {
-
-    mail.account = account.id;
-    if (negotiation) {
-      mail.negotiation = negotiation.id;
-    }
-    if (!mail.body || mail.body.length === 0) {
-      mail.body = htmlToText.fromString(mail.bodyHTML);
-    }
-    mail.type = 'received';
     let savedMail;
-    return Model.mails.create(mail).then(m => {
+    return Model.customers.findOne({account: account.id, email: mail.from.address}).then((customer) => {
+      let groups = {};
+      if (customer) {
+        mail.client = customer.id
+        if (customer.group) groups[customer.group] = true;
+      }
+      mail.groups = groups;
+
+      mail.account = account.id;
+      if (negotiation) {
+        mail.negotiation = negotiation.id;
+      }
+      if (!mail.body || mail.body.length === 0) {
+        mail.body = htmlToText.fromString(mail.bodyHTML);
+      }
+      mail.type = 'received';
+      
+      return Model.mails.create(mail)
+    }).then(m => {
       savedMail = m;
       if (!negotiation) {
         return new Promise((resolve, reject) => {
@@ -73,7 +82,8 @@ class MailImporter {
       return new Promise((resolve, reject) => {
         resolve(savedMail);
       });
-    }); 
+    });
+
   }
 }
 

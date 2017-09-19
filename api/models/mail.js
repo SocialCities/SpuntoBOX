@@ -17,6 +17,8 @@ module.exports = {
     replyTo: {model: 'mails' },
     groups: { type: 'json' },
     log: {type: 'json'},
-    draft: {type: 'boolean', defaultsTo: false}
+    draft: {type: 'boolean', defaultsTo: false},
+    read: {type: 'boolean'},
+    client: {type: 'string'}
   }
 };

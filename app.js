@@ -11,7 +11,8 @@ setInterval(function(){
   }
 
   Service.CronEmailFetcherManager.cleanup(accountRooms);
-  console.log(axolot.sockets.nsps['/'].adapter.rooms)
+  // console.log(axolot.sockets.nsps['/'].adapter.rooms)
 }, 3000);
 })
 module.exports.app = axolot;
+axolot.use(require('skipper')());

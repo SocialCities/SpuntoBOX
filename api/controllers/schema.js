@@ -15,6 +15,7 @@ module.exports = {
     'post /:account/:schemaType/field': [function(req, res, next) {
 
       let field = {};
+      field.type = req.body.type;
       if (req.body.type === 'text' || req.body.type === 'select') {
         field.type = 'string';
       }

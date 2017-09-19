@@ -1,6 +1,7 @@
 'use strict';
 var htmlToText = require('html-to-text');
 var Mustache = require("mustache")
+var path = require("path");
 
 function addCustomer(e, account) {
   console.log('add fucking customer')
@@ -97,7 +98,17 @@ module.exports = {
             body = Mustache.render(body, {cliente: cust});
           }
         }
-        
+        email.attachments = (req.body.attachments || []).filter((att) => {return att}).map((att) => {
+          if (!att) return false;
+          const f = att.file.split('.');
+          return {
+            savedFile: att.file,
+            filename: att.filename,
+            size: att.size,
+            uuid: f[0]
+          }
+        });
+
         email.account = req.params.accountId;
         email.body = htmlToText.fromString(body);
         email.fullBody = email.body;
@@ -236,7 +247,20 @@ module.exports = {
       }).catch((err) => {
         console.log('mails Error', err);
       })
-    }]
+    }],
+    'patch /:accountId/:emailId/read': [function(req, res, next) {
+      let data;
+      let em;
+      Model.emails.findOne({account: req.params.accountId, id: req.params.emailId}).then((email) => {
+        email.read = true;
+        em = email;
+        return email.save();
+      }).then((email) => {
+        res.send(em);
+      }).catch((err) => {
+        console.log('email Error', err);
+      })
+    }],
   },
   sockets: {
     self: function (cb) {

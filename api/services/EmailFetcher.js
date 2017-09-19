@@ -1,6 +1,10 @@
 var imaps = require('imap-simple');
 var addressparser = require('addressparser');
 var emailreplyparsertotango = require('emailreplyparsertotango').EmailReplyParserTotango;
+var uuid4 = require('uuid/v4');
+var fs = require('fs');
+var path = require('path');
+var config = require('axolot/config/config');
 
 const fetchOptions = {
   bodies: ['HEADER.FIELDS (FROM TO SUBJECT DATE)'],
@@ -56,7 +60,7 @@ class EmailFetcher {
   _normalizeMailsObj(mails, retrievedData) {
     retrievedData.forEach((d) => {
       if (d.type === 'attachment') {
-        mails[d.uid].attachments.push({filname: d.filename, data: d.data});
+        mails[d.uid].attachments.push({filename: d.filename, savedFile: d.savedFile, uuid: d.uuid});
       } else if (d.type === 'html') {
         mails[d.uid].bodyHTML = d.text;
       } else if (d.type === 'text') {
@@ -91,11 +95,20 @@ class EmailFetcher {
   }
 
   _prepareAttachment(message, part, partData) {
+    const uuid = uuid4();
+    const savedFile = uuid + path.extname(part.disposition.params.filename);
+    fs.writeFile(config.upload.path + savedFile, partData, function(err) {
+      if(err) {
+        return console.log(err);
+      }
+    }); 
+
     return {
       type: 'attachment',
       uid: message.attributes.uid,
+      uuid: uuid,
       filename: part.disposition.params.filename,
-      data: partData
+      savedFile: savedFile
     };
   }
 

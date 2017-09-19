@@ -14,6 +14,9 @@ exports.secrets = {
     token: 'NOTSOSECRET'
 };
 
+exports.upload = {
+    path: rootPath + '/.tmp/'
+}
 // Waterline ORM configuration
 var mongoAdapter = require('sails-mongo');
 
