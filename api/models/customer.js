@@ -22,7 +22,6 @@ module.exports = {
     fax: { type: 'string' },
     mobilePhone: { type: 'string' },
     mobilePhoneExtra: { type: 'string' },
-    optOut: {type: 'boolean', defaultsTo: false },
     negotiations: { type: 'array', defaultsTo:[]},
     latestCheckin: { type: 'datetime' },
     optin: {type: 'boolean', defaultsTo: true}

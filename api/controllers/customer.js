@@ -72,7 +72,7 @@ module.exports = {
       })
     }],
     'get /:account': [function(req, res, next) {
-      Model.customers.find({account: req.params.account}).then((customers) => {
+      Model.customers.find({account: req.params.account}).limit(10).sort('createdAt DESC').then((customers) => {
         res.send(customers);
       }).catch((err) => {
         console.log('customers Error', err);
@@ -105,10 +105,7 @@ module.exports = {
     }],
     'put /:account/:customerId': [function(req, res, next) {
       let data = req.body;
-      Model.customers.findOne({account: req.params.account, id: req.params.customerId}).then((customer) => {
-        data.optin = customer.optin;
-        return Model.customers.update({account: req.params.account, id: req.params.customerId}, data);
-      }).then((customer) => {
+      return Model.customers.update({account: req.params.account, id: req.params.customerId}, data).then((customer) => {
         console.log('customer')
         console.log(customer)
         res.send(customer);

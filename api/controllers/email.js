@@ -251,7 +251,9 @@ module.exports = {
     'patch /:accountId/:emailId/read': [function(req, res, next) {
       let data;
       let em;
-      Model.emails.findOne({account: req.params.accountId, id: req.params.emailId}).then((email) => {
+      Model.mails.findOne({account: req.params.accountId, id: req.params.emailId}).then((email) => {
+        console.log(email);
+        console.log('email^^')
         email.read = true;
         em = email;
         return email.save();

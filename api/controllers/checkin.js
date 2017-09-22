@@ -86,16 +86,16 @@ module.exports = {
         console.log('checkin Error', err);
       })
     }],
-    'delete /:account/:customerId': [function(req, res, next) {
+    'delete /:account/:checkinId': [function(req, res, next) {
 
       let customer = req.body;
       customer.account = req.params.account;
-      Model.customers.destroy({id: req.params.customerId, account: req.params.account}).then((customer) => {
-        console.log('customer')
-        console.log(customer)
-        res.send(customer);
+      Model.checkins.destroy({id: req.params.checkinId, account: req.params.account}).then((checkin) => {
+        console.log('checkin')
+        console.log(checkin)
+        res.send(checkin);
       }).catch((err) => {
-        console.log('customers Error', err);
+        console.log('checkin Error', err);
       })
     }]
   },

@@ -12,6 +12,7 @@ module.exports = {
     checkinDate: {type: 'datetime'},
     checkoutDate: {type: 'datetime'},
     daysInterview: {type: 'string'},
-    email: {type: 'string'}
+    email: {type: 'string'},
+    interviewSent: {type: 'boolean', defaultsTo: false}
   }
 };
