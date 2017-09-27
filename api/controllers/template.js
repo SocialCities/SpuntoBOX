@@ -66,6 +66,23 @@ module.exports = {
         console.log('templates Error', err);
       })
     }],
+    'delete /:accountId/:templateId': [function (req, res, next) {
+      Model.templates.destroy({account: req.params.accountId, id: req.params.templateId}).then((template) => {
+        res.send(template);
+      }).catch((err) => {
+        console.log('template Error', err);
+      })
+    }],
+    'delete /:accountId/:templateId/:language': [function (req, res, next) {
+      Model.templates.findOne({account: req.params.accountId, id: req.params.templateId}).then((template) => {
+        delete template.body[req.params.language];
+        return template.save();
+      }).then(template => {
+        res.send(template);
+      }).catch((err) => {
+        console.log('template Error', err);
+      })
+    }],
 
     'get /:account': [function(req, res, next) {
       Model.templates.find({account: req.params.account}).sort('createdAt DESC').then((templates) => {

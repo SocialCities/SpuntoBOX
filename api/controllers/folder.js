@@ -23,6 +23,17 @@ module.exports = {
       }).catch((err) => {
         console.log('folders Error', err);
       });
+    }],
+    'delete /:account/:folderId': [checkScopes(['user']),function(req, res, next) {
+      let folder = {};
+      folder.account = req.params.account;
+      folder.id = req.params.folderId;
+      Model.folders.destroy(folder).then((err, asd) => {
+        console.log(err, asd)
+        res.send(asd || {});
+      }).catch((err) => {
+        console.log('folders Error', err);
+      });
     }]
   },
 

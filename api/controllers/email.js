@@ -180,18 +180,18 @@ module.exports = {
         console.log('mails drafts Error', err);
       })
     }],
-    'get /:accountId/search/:content?': [function (req, res, next) {
+    'get /:accountId/search/?': [function (req, res, next) {
       console.log('here')
       let query = {account: req.params.accountId, negotiation: null}
-      if (req.params.content) {
+      if (req.query.content) {
         query.or = [
-          { subject: {'contains': req.params.content} },
-          { body: {'contains': req.params.content} },
-          { 'from.address': {'contains': req.params.content}},
-          { 'from.name': {'contains': req.params.content}},
-          { 'to': {'contains': req.params.content}},
-          { 'cc': {'contains': req.params.content}},
-          { 'bcc': {'contains': req.params.content}},
+          { subject: {'contains': req.query.content} },
+          { body: {'contains': req.query.content} },
+          { 'from.address': {'contains': req.query.content}},
+          { 'from.name': {'contains': req.query.content}},
+          { 'to': {'contains': req.query.content}},
+          { 'cc': {'contains': req.query.content}},
+          { 'bcc': {'contains': req.query.content}},
         ];
       }
       if (req.query.draft) {
@@ -203,6 +203,30 @@ module.exports = {
       if (req.query.group) {
         query.groups = {[req.query.group]: true};
       }
+      if (req.query.from || req.query.to) {
+        let date = {date: {}};
+        let createdAt = {createdAt:{}};
+        if (req.query.from) {
+          date.date['>='] = new Date(parseInt(req.query.from));
+          createdAt.createdAt['>='] = new Date(parseInt(req.query.from));
+        }
+        if (req.query.to) {
+          date.date['<='] = new Date(parseInt(req.query.to));
+          createdAt.createdAt['<='] = new Date(parseInt(req.query.to));
+        }
+        if (!query.or) {
+          query.or = [];
+        }
+        query.or.push(date)
+        query.or.push(createdAt)
+      
+      }
+
+      if (req.query.folder && req.query.folder !== 'draft') {
+        query['folders.id'] = req.query.folder;
+      }
+      
+      console.log('q', query)
       Model.mails.find(query).sort('createdAt DESC').then((mails) => {
         res.send(mails);
       }).catch((err) => {
@@ -248,6 +272,25 @@ module.exports = {
         console.log('mails Error', err);
       })
     }],
+    'patch /:accountId/:emailId/folder': [function(req, res, next) {
+      let data;
+      let em;
+      Model.mails.findOne({account: req.params.accountId, id: req.params.emailId}).then((email) => {
+        console.log(email);
+        console.log('email^^')
+        if (!email.folders) {
+          email.folders = [];
+        } 
+        email.folders.push(req.body);
+        em = email;
+        return email.save();
+      }).then((email) => {
+        res.send(em);
+      }).catch((err) => {
+        console.log('email Error', err);
+      })
+    }],
+
     'patch /:accountId/:emailId/read': [function(req, res, next) {
       let data;
       let em;

@@ -11,13 +11,30 @@ module.exports = {
         query.or = [
           { 'guests.name': {'contains': content} },
           { 'guests.surname': {'contains': content} },
-          { 'guests.email': {'contains': content}}        
+          { 'guests.email': {'contains': content}},
+          { 'email': {'contains': content}}    
         ];
       }
       if (req.query.group) {
         query.group = req.query.group;
       }
-    console.log('queryz', query)
+      if (req.query.from || req.query.to) {
+        query.checkinDate = {};
+        query.checkoutDate = {};
+        if (req.query.from) {
+          query.checkinDate['>='] = new Date(parseInt(req.query.from) * 1000);
+          query.checkoutDate['>='] = new Date(parseInt(req.query.from) * 1000);
+        }
+        if (req.query.to) {
+          query.checkinDate['<='] = new Date(parseInt(req.query.to) * 1000);
+          query.checkoutDate['<='] = new Date(parseInt(req.query.to) * 1000);
+        }
+      }
+
+      if (req.query.folder && req.query.folder !== 'draft') {
+        query['folders.id'] = req.query.folder;
+      }
+      console.log(query)
       Model.checkins.find(query).then((checkins) => {
         
         console.log(checkins)

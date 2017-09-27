@@ -19,6 +19,7 @@ module.exports = {
     log: {type: 'json'},
     draft: {type: 'boolean', defaultsTo: false},
     read: {type: 'boolean'},
-    client: {type: 'string'}
+    client: {type: 'string'},
+    folders: {type: 'array'}
   }
 };
