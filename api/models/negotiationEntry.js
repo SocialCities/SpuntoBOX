@@ -11,7 +11,7 @@ module.exports = {
     name: { type: 'string' },
     content: {type: 'string'},
     contentHtml: {type: 'string'},
-    source: { type: 'string', enum: ['internet', 'phone', 'email'] },
+    source: { type: 'string', enum: ['internet', 'phone', 'email', 'crm'] },
     subject: { type: 'string'},
     negotiation: {model: 'negotiations'},
     mail: {type: 'object'}

@@ -6,7 +6,7 @@ class MailImporter {
   }
 
   saveSingleMail(account, mail) {
-    return Model.negotiations.findOne({ where: {email: mail.from.address, status: 'pending', account: account.id}}).then((negotiation) => {
+    return Model.negotiations.findOne({ where: {'guest.email': mail.from.address, status: 'pending', account: account.id}}).then((negotiation) => {
       // if (!negotiation) {
       //   return this.createNewNegotiation(account, mail);
       // }
@@ -74,11 +74,15 @@ class MailImporter {
         subject: savedMail.subject,
         email: savedMail.from.address,
         name: savedMail.from.name,
+        content: savedMail.body,
+        contentHtml: savedMail.bodyHTML,
+        type: 'received',
         source: 'email',
         mail: savedMail
       }
       return Model.negotiationentries.create(negotiationEntry);
     }).then(ne => {
+      console.log(ne)
       return new Promise((resolve, reject) => {
         resolve(savedMail);
       });
