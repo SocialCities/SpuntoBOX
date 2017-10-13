@@ -31,6 +31,7 @@ class EmailFetcher {
     }).then((messages) => {
       var attachments = [];
       messages.forEach((message) => {
+        
         if (message.attributes.uid <= account.latestUid) return;
 
         mails[message.attributes.uid] = this._generateMailData(message);
@@ -41,9 +42,7 @@ class EmailFetcher {
       return Promise.all(attachments);
     }).then((retrievedData) => {
       var result = [];
-
       mails = this._normalizeMailsObj(mails, retrievedData);
-
       for (var key in mails) {
         if (mails.hasOwnProperty(key)) {
           result.push(mails[key]);
@@ -59,16 +58,17 @@ class EmailFetcher {
 
   _normalizeMailsObj(mails, retrievedData) {
     retrievedData.forEach((d) => {
-      if (!d || d.type) return mails;
-
-      if (d.type === 'attachment') {
-        mails[d.uid].attachments.push({filename: d.filename, savedFile: d.savedFile, uuid: d.uuid});
-      } else if (d.type === 'html') {
-        mails[d.uid].bodyHTML = d.text;
-      } else if (d.type === 'text') {
-        mails[d.uid].fullBody = d.text;
-        mails[d.uid].body = d.reply;
+      if (d && d.type) {
+        if (d.type === 'attachment') {
+          mails[d.uid].attachments.push({filename: d.filename, savedFile: d.savedFile, uuid: d.uuid});
+        } else if (d.type === 'html') {
+          mails[d.uid].bodyHTML = d.text;
+        } else if (d.type === 'text') {
+          mails[d.uid].fullBody = d.text;
+          mails[d.uid].body = d.reply;
+        }
       }
+      
     });
 
     return mails;
