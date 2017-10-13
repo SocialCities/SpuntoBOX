@@ -59,8 +59,8 @@ class EmailFetcher {
 
   _normalizeMailsObj(mails, retrievedData) {
     retrievedData.forEach((d) => {
-      if (!d.type) return mails;
-      
+      if (!d || d.type) return mails;
+
       if (d.type === 'attachment') {
         mails[d.uid].attachments.push({filename: d.filename, savedFile: d.savedFile, uuid: d.uuid});
       } else if (d.type === 'html') {
