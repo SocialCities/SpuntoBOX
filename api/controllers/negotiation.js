@@ -88,14 +88,15 @@ module.exports = {
         guest: req.body.guest,
         header: req.body.header,
         footer: req.body.footer,
-        proposals: req.body.proposals
+        proposals: req.body.proposals,
+        status: 'pending'
       }
-
+      console.log('here')
       const parsedEmail = Service.Negotiation.generateEmail(negotiation);
       let body;
       let email = {};
       let groups = {};
-      let negot = nego;
+      let negot;
       Model.customers.findOne({email: negotiation.guest.email, account: req.params.account}).then((customer) => {
         if (customer.group) {
           groups[customer.group] = true;
@@ -130,7 +131,39 @@ module.exports = {
         email.log = receipt;
         return Model.mails.create(email);
       }).then((mail) => {
+        return new Promise((resolve, reject) => {
+          if (!req.body.connectedEmail) {
+            return resolve(mail);
+          }
+          let fe;
+          return Model.mails.findOne({id: req.body.connectedEmail}).then(foundMail => {
+            foundMail.negotiation = negotiation.id || negot.id;
+            fe = foundMail;
+            return foundMail.save();
+          }).then(ma => {
 
+            let negotiationEntry = {
+              negotiation: negotiation.id || negot.id,
+              account: req.params.account,
+              client: req.body.guest.id,
+              subject: fe.subject,
+              email: email.to,
+              name: fe.from.name,
+              content: fe.body,
+              contentHtml: fe.bodyHTML,
+              source: 'email',
+              type: 'received',
+              mail: fe
+            }
+    
+            return Model.negotiationentries.create(negotiationEntry);
+          }).then(ne => {
+            resolve(ne);
+          }).catch(e => {
+            reject(e)
+          });
+        });
+      }).then(mail => {
         let negotiationEntry = {
           negotiation: negotiation.id || negot.id,
           account: req.params.account,
