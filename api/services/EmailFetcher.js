@@ -11,7 +11,7 @@ const fetchOptions = {
   struct: true
 };
 
-const defaultTimeout = 120;
+const defaultTimeout = 8000;
 
 class EmailFetcher {
   constructor() {
