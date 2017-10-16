@@ -45,9 +45,9 @@ class CronCheckinInterview {
       console.log('content', checkin.email)
       let content = this.getEmail(checkin, checkin.email, results[1] || checkin.guests[0], results[2]);
       let email = {
-        from: results[0].name,
+        from: results[0].email,
         to: checkin.guests[0].email,
-        subject: 'Intervista hote',
+        subject: 'Intervista hotel',
         bodyHTML: content
       };
 
