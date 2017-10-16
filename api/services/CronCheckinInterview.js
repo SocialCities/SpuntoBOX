@@ -1,5 +1,6 @@
 var cron = require('cron');
 var Mustache = require("mustache")
+var config = require('axolot/config/config');
 
 class CronCheckinInterview {
   constructor() {
@@ -36,36 +37,37 @@ class CronCheckinInterview {
   }
 
   sendInterview(checkin) {
-    return Promise.all([Model.accounts.findOne({id: checkin.account}), Model.customers.findOne({id: checkin.guests[0].id || 0})]).then(results => {
+    return Promise.all([Model.accounts.findOne({id: checkin.account}), Model.customers.findOne({id: checkin.guests[0].id || 0}), Model.interviews.findOne({account: checkin.account})]).then(results => {
       if (!results[0]) {
         console.log('Something  went  wrong, checkin id:', checkin.id);
         return 'Not Found';
       }
       console.log('content', checkin.email)
-      let content = this.getEmail(checkin, checkin.email, results[1] || checkin.guests[0]);
+      let content = this.getEmail(checkin, checkin.email, results[1] || checkin.guests[0], results[2]);
       let email = {
         from: results[0].name,
         to: checkin.guests[0].email,
-        subject: 'Intervista hotel bla bla',
+        subject: 'Intervista hote',
         bodyHTML: content
       };
 
       return Service.Mail.sendEmail(email, results[0].smtp);
     }).then(email => {
       checkin.interviewSent = true;
+      checkin.debug = email;
 
       return checkin.save();
     });
 
   }
 
-  getEmail(checkin, content, customer) {
+  getEmail(checkin, content, customer, interview) {
     let cust = {
       nome: customer.name,
       cognome: customer.surname
     };
 
-    return Mustache.render(content, {cliente: cust, checkin: checkin});
+    return Mustache.render(content, {cliente: cust, checkin: checkin, intervista: {link: config.webUrl + '/i/' + interview.id + '/' + customer.id + '/it'}});
   }
   
   

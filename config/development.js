@@ -14,6 +14,7 @@ exports.secrets = {
     token: 'NOTSOSECRET'
 };
 
+exports.webUrl = 'http://localhost:3000';
 exports.upload = {
     path: rootPath + '/.tmp/'
 }
