@@ -75,6 +75,18 @@ module.exports = {
 
         return Model.negotiationentries.create(negotiationEntry);
       }).then((ne) => {
+        if (nego.type !== 'secondo') {
+          
+          Model.negotiations.findOne({id: req.params.negotiation}).then(negoti => {
+            negoti.type = 'secondo';
+            negoti.save();
+          }).then(n => {
+            console.log('save nego', negoti);
+          }).catch(e => {
+            console.log('error saving nego');
+          });
+        }
+
         res.send(ne);
       }).catch(e => {
         console.log('error negotiations', e);
@@ -211,6 +223,20 @@ module.exports = {
         console.log('customers Error', err);
       })
     }],
+    'patch /:accountId/:negotiation/read': [function(req, res, next) {
+      let data;
+      let em;
+      Model.negotiations.findOne({account: req.params.accountId, id: req.params.negotiation}).then((negotiation) => {
+        negotiation.read = true;
+        em = negotiation;
+        return negotiation.save();
+      }).then((negotiation) => {
+        res.send(em);
+      }).catch((err) => {
+        console.log('negotiation Error', err);
+      })
+    }],
+
   },
 
   sockets: {

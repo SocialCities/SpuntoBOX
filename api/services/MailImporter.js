@@ -67,6 +67,13 @@ class MailImporter {
           resolve(savedMail);
         });
       }
+      Model.negotiations.findOne({id: negotiation.id}).then((negot) => {
+        negot.read = false;
+        return negot.save();
+      }).then((negoti) => {
+      }).catch(err => {
+        console.log('error resetting read: ', err)
+      })
       let negotiationEntry = {
         negotiation: negotiation.id,
         account: savedMail.account,

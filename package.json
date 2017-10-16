@@ -8,6 +8,7 @@
     "addressparser": "^1.0.1",
     "axolot": "^1.0.2",
     "cron": "^1.2.1",
+    "dateformat": "^3.0.2",
     "emailreplyparsertotango": "^0.0.9",
     "html-to-text": "^3.2.0",
     "imap-simple": "^3.0.0",

@@ -1,5 +1,5 @@
 var htmlToText = require('html-to-text');
-
+var dateformat = require('dateformat');
 
 class Negotiation {
   constructor() {
@@ -14,8 +14,8 @@ class Negotiation {
     let txt =[];
     proposals.forEach((p, i) => {
       txt.push('<h4>Proposta ' + (i + 1) + '</h4>');
-      txt.push('Data Arrivo: ' + p.arrivalDate);
-      txt.push('Data Partenza: ' + p.departureDate);
+      txt.push('Data Arrivo: ' + dateformat(new Date(p.arrivalDate), 'd.mm.yyyy'));
+      txt.push('Data Partenza: ' + dateformat(new Date(p.departureDate), 'd.mm.yyyy'));
       txt.push('Importo: ' + p.amount);
       txt.push('Trattamento: ' + p.treatment);
       txt.push('Tipologia: ' + p.type);
