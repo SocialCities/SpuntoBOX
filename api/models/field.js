@@ -10,6 +10,6 @@ module.exports = {
     schemaType: { type: 'string', enum: ['customer']},
     type: { type: 'string', enum: ['string', 'checkbox', 'date']},
     enum: { type: 'array'},
-    required: { type: 'boolean', defaultTo: false}
+    required: { type: 'boolean', defaultsTo: false}
   }
 };

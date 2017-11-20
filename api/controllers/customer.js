@@ -82,7 +82,13 @@ module.exports = {
       console.log(req.body)
       let customer = req.body;
       customer.account = req.params.account;
-      Model.customers.create(customer).then((customer) => {
+      Model.customers.find({account: req.params.account, email: customer.email}).then(customers => {
+        if (customers.length > 0) {
+          res.status(409).send({error: 'Questa email é già utilizzata'});
+          return Promise.reject();
+        }
+        return Model.customers.create(customer);
+      }).then((customer) => {
         console.log('customer')
         console.log(customer)
         res.send(customer);

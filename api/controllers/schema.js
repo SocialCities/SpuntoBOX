@@ -20,6 +20,10 @@ module.exports = {
         field.type = 'string';
       }
 
+      if (req.body.type === 'boolean') {
+        field.type = 'checkbox';
+      }
+
       field.name = req.body.title;
 
       field.account = req.params.account;
