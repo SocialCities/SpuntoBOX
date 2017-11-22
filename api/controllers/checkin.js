@@ -29,7 +29,9 @@ module.exports = {
           checkinDate['<='] = new Date(parseInt(req.query.to) * 1000);
           checkoutDate['<='] = new Date(parseInt(req.query.to) * 1000);
         }
-
+        if (!query.or) {
+          query.or = [];
+        }
         query.or.push({checkinDate: checkinDate});
         query.or.push({checkoutDate: checkoutDate});
       }
