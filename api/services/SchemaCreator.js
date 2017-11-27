@@ -18,6 +18,11 @@ class SchemaCreator {
           } else {
             obj.type = field.type;
           }
+
+          if (field.type === 'checkbox') {
+            obj.type = 'boolean';
+          }
+          
           if (field.enum && field.enum.length > 0) {
             obj.enum = field.enum;
           }
