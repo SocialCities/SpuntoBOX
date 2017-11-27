@@ -32,14 +32,17 @@ module.exports = {
         to: email.to,
         cc: email.cc,
         bcc: email.bcc,
-        html: email.bodyHTML,
+        text: email.bodyToSend,
+        html: email.bodyToSendHtml || email.bodyHTML || email.body,
         subject: email.subject,
+        headers: {"Content-Transfer-Encoding": "quoted-printable"},
         attachments: (email.attachments || []).map(a => {
             return {   // file on disk as an attachment
                 filename: a.filename,
                 path: path.join(mainConfig.upload.path, a.savedFile) // stream this file
             };
-        })
+        }),
+        emcoding: 'quoted-printable'
       }, (value, err) => {
           console.log(value)
           console.log(err)

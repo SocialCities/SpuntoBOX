@@ -92,6 +92,17 @@ module.exports = {
         console.log('customer')
         console.log(customer)
         res.send(customer);
+        return Model.accounts.findOne(req.params.account);
+      }).then((account) => {
+
+        Service.Mail.sendEmail({
+          from: account.email,
+          to: [customer.email],
+          subject: 'Sei stato aggiunto al nostro sistema SpuntoBox',
+          body: 'Ti informiamo che sei stato aggiunto al nostro sistema Spuntobox',
+          bodyHTML: 'Ti informiamo che sei stato aggiunto al nostro sistema Spuntobox',
+          date: new Date()
+        }, account.smtp);
       }).catch((err) => {
         console.log('customers Error', err);
       })

@@ -24,9 +24,13 @@ module.exports = {
       let email = {};
       let groups = {};
       let nego;
+      let previousEmail = false;
       Model.negotiations.findOne({id: req.params.negotiation}).then(negotiation => {
         nego = negotiation;
-        return Model.customers.findOne({id: negotiation.client, account: req.params.account});
+        return Model.mails.find({negotiation: negotiation.id}).limit(1).sort('createdAt DESC')
+      }).then( mail => {
+        previousEmail = mail.length === 1 ? mail[0] : false;
+        return Model.customers.findOne({id: nego.client, account: req.params.account});
       }).then(customer => {
         if (customer.group) {
           groups[customer.group] = true;
@@ -36,12 +40,22 @@ module.exports = {
           cognome: customer.surname
         };
         body = Mustache.render(req.body.text, {cliente: cust});
-
+        
+        let parsedBody = htmlToText.fromString(body);
+        let fullBody = parsedBody;
+        let toSend = parsedBody;
+        let toSendHtml = body;
+        if (previousEmail) {
+          toSend += "\n\n" + previousEmail.fullBody.replace(/^/gm, '\n> ');
+          toSendHtml += "<br><br><div class=\"gmail_extra\"><div class=\"gmail_quote\"><blockquote>" + previousEmail.fullBody.replace(/^/gm, '\n> ') + "</blockquote></div></div>";
+        }
         email.negotiation = nego.id;
         email.account = req.params.account;
-        email.body = htmlToText.fromString(body);
-        email.fullBody = email.body;
+        email.body = parsedBody;
+        email.fullBody = fullBody;
         email.bodyHTML = body;
+        email.bodyToSend = toSend;
+        email.bodyToSendHtml = toSendHtml;
         email.subject = 'Proposta trattativa';
         email.date = new Date();
         email.to = nego.guest.email;
@@ -103,7 +117,8 @@ module.exports = {
         proposals: req.body.proposals,
         status: 'pending'
       }
-      console.log('here')
+      console.log(req.body)
+      let negotiationId = req.body.id;
       const parsedEmail = Service.Negotiation.generateEmail(negotiation);
       let body;
       let email = {};
@@ -118,10 +133,14 @@ module.exports = {
           cognome: customer.surname
         };
         body = Mustache.render(parsedEmail, {cliente: cust});
-        return Model.negotiations.create(negotiation);
+        if (req.body.id) {
+          return Model.negotiations.update({id: negotiationId}, negotiation);
+        } else {
+          return Model.negotiations.create(negotiation);
+        }
       }).then((nego) => {
         negot = nego;
-        email.negotiation = negotiation.id || nego.id;
+        email.negotiation = negotiationId || negotiation.id || nego.id;
         email.account = req.params.account;
         email.body = htmlToText.fromString(body);
         email.fullBody = email.body;
@@ -149,7 +168,7 @@ module.exports = {
           }
           let fe;
           return Model.mails.findOne({id: req.body.connectedEmail}).then(foundMail => {
-            foundMail.negotiation = negotiation.id || negot.id;
+            foundMail.negotiation = negotiationId || negotiation.id || negot.id;
             fe = foundMail;
             return foundMail.save();
           }).then(ma => {
@@ -177,7 +196,7 @@ module.exports = {
         });
       }).then(mail => {
         let negotiationEntry = {
-          negotiation: negotiation.id || negot.id,
+          negotiation: negotiationId || negotiation.id || negot.id,
           account: req.params.account,
           client: req.body.guest.id,
           subject: email.subject,
