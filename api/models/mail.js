@@ -5,6 +5,7 @@ module.exports = {
 
   attributes: {
     account: { model: 'accounts'},
+    uuid: {type: 'string'},
     body: { type: 'string', required: true },
     fullBody: { type: 'string', required: true },
     bodyHTML: { type: 'string'},
@@ -20,6 +21,7 @@ module.exports = {
     draft: {type: 'boolean', defaultsTo: false},
     read: {type: 'boolean'},
     client: {type: 'string'},
-    folders: {type: 'array'}
+    folders: {type: 'array'},
+    status: {type: 'string', defaultsTo: 'red'},
   }
 };

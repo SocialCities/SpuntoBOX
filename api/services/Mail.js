@@ -33,7 +33,7 @@ module.exports = {
         cc: email.cc,
         bcc: email.bcc,
         text: email.bodyToSend,
-        html: email.bodyToSendHtml || email.bodyHTML || email.body,
+        html: (email.bodyToSendHtml || email.bodyHTML || email.body) + (email.oldId ? '<img src="' + mainConfig.apiUrl + '/emails/image/' + email.oldId + '" />' : ''),
         subject: email.subject,
         headers: {"Content-Transfer-Encoding": "quoted-printable"},
         attachments: (email.attachments || []).map(a => {

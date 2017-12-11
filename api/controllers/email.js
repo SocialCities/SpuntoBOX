@@ -2,6 +2,7 @@
 var htmlToText = require('html-to-text');
 var Mustache = require("mustache")
 var path = require("path");
+var uuidv4 = require('uuid/v4');
 
 function addCustomer(e, account) {
   console.log('add fucking customer')
@@ -15,6 +16,14 @@ function addCustomer(e, account) {
 module.exports = {
   path: '/emails',
   actions: {
+    'get /image/:id': [function(req, res, next) {
+      Model.mails.update({id: req.params.id}, {status: 'green'}).then((st) => {
+        res.sendFile(__dirname + '/transparent.png');
+      }).catch((err) => {
+        console.log('updatedEmail Error', err);
+      })
+
+    }],
     'get /test': [function (req, res, next) {
       console.log('test')
       //ULTRA TEST
@@ -113,12 +122,14 @@ module.exports = {
         let fullBody = parsedBody;
         let toSend = parsedBody;
         let toSendHtml = body;
-        if (req.body.oldEmail) {
+        if (req.body.oldEmail && req.body.oldEmail.fullBody) {
           toSend += "\n\n" + req.body.oldEmail.fullBody.replace(/^/gm, '\n> ');
           toSendHtml += "<br><br><div class=\"gmail_extra\"><div class=\"gmail_quote\"><blockquote>" + req.body.oldEmail.fullBody.replace(/^/gm, '<br> ') + "</blockquote></div></div>";
         }
 
         email.account = req.params.accountId;
+        email.uuid = uuidv4();
+        email.oldId = req.body.oldEmail && req.body.oldEmail.id;
         email.body = parsedBody;
         email.fullBody = fullBody;
         email.bodyHTML = body;
@@ -140,6 +151,13 @@ module.exports = {
         email.from = account.email;
         return Service.Mail.sendEmail(email, account.smtp);
       }).then((receipt) => {
+        if (req.body.oldEmail && req.body.oldEmail.id) {
+          Model.mails.update({account: req.params.accountId, id: req.body.oldEmail.id}, {status: 'orange'}).then((st) => {
+            console.log('updatedEmail', st)
+          }).catch((err) => {
+            console.log('updatedEmail Error', err);
+          })
+        }
         email.log = receipt;
         return Model.mails.create(email);
       }).then((mail) => {

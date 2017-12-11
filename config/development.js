@@ -15,6 +15,8 @@ exports.secrets = {
 };
 
 exports.webUrl = 'http://localhost:3000';
+exports.apiUrl = 'http://localhost:4000';
+
 exports.upload = {
     path: rootPath + '/.tmp/'
 }
