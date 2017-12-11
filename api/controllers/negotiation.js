@@ -47,7 +47,7 @@ module.exports = {
         let toSendHtml = body;
         if (previousEmail) {
           toSend += "\n\n" + previousEmail.fullBody.replace(/^/gm, '\n> ');
-          toSendHtml += "<br><br><div class=\"gmail_extra\"><div class=\"gmail_quote\"><blockquote>" + previousEmail.fullBody.replace(/^/gm, '\n> ') + "</blockquote></div></div>";
+          toSendHtml += "<br><br><div class=\"gmail_extra\"><div class=\"gmail_quote\"><blockquote>" + previousEmail.fullBody.replace(/^/gm, '<br> ') + "</blockquote></div></div>";
         }
         email.negotiation = nego.id;
         email.account = req.params.account;

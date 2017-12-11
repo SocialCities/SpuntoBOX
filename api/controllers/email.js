@@ -109,10 +109,21 @@ module.exports = {
           }
         });
 
+        let parsedBody = htmlToText.fromString(body);
+        let fullBody = parsedBody;
+        let toSend = parsedBody;
+        let toSendHtml = body;
+        if (req.body.oldEmail) {
+          toSend += "\n\n" + req.body.oldEmail.fullBody.replace(/^/gm, '\n> ');
+          toSendHtml += "<br><br><div class=\"gmail_extra\"><div class=\"gmail_quote\"><blockquote>" + req.body.oldEmail.fullBody.replace(/^/gm, '<br> ') + "</blockquote></div></div>";
+        }
+
         email.account = req.params.accountId;
-        email.body = htmlToText.fromString(body);
-        email.fullBody = email.body;
+        email.body = parsedBody;
+        email.fullBody = fullBody;
         email.bodyHTML = body;
+        email.bodyToSend = toSend;
+        email.bodyToSendHtml = toSendHtml;
         email.subject = req.body.subject;
         email.date = new Date();
         email.to = req.body.to;
