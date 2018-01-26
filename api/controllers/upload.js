@@ -7,6 +7,9 @@ var config = require('axolot/config/config');
 module.exports = {
   path: '/uploads',
   actions: {
+    'get /:filename': [function(req, res, next) {
+      res.download(config.upload.path +req.params.filename, req.params.filename);
+    }],
     'post /:account': [function(req, res, next) {
       console.log('files')
       console.log(req.file('file')._files[0].stream)

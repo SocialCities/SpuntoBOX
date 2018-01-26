@@ -51,7 +51,8 @@ module.exports = {
             user: true,
             optin: c.optin || false,
             value: c.email,
-            text: c.name + ' ' + c.surname + ' <' + c.email + '>'
+            text: c.name + ' ' + c.surname + ' <' + c.email + '>',
+            language: (c.language || 'it').toLowerCase()
           }
         });
         res.send(customers);

@@ -11,6 +11,9 @@ module.exports = {
         interview.opened = (interview.opened || 0) + 1;
 
         interview.save();
+        return Model.accounts.findOne({id: interview.account});
+      }).then(account => {
+        i.settings = account.interviste || {}
 
         return Model.customers.findOne({id: req.params.customerId})
       }).then((customer) => {

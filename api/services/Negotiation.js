@@ -16,7 +16,7 @@ class Negotiation {
       txt.push('<h4>Proposta ' + (i + 1) + '</h4>');
       txt.push('Data Arrivo: ' + dateformat(new Date(p.arrivalDate), 'd.mm.yyyy'));
       txt.push('Data Partenza: ' + dateformat(new Date(p.departureDate), 'd.mm.yyyy'));
-      txt.push('Importo: ' + p.amount);
+      txt.push('Importo: ' + new Intl.NumberFormat('it-IT', { style: 'currency', currency: p.currency || 'EUR' }).format(p.amount));
       txt.push('Trattamento: ' + p.treatment);
       txt.push('Tipologia: ' + p.type);
       txt.push('Adulti: ' + p.adults);
