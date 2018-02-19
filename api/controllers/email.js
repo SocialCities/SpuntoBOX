@@ -3,6 +3,7 @@ var htmlToText = require('html-to-text');
 var Mustache = require("mustache")
 var path = require("path");
 var uuidv4 = require('uuid/v4');
+var config = require('axolot/config/config');
 
 function addCustomer(e, account) {
   console.log('add fucking customer')
@@ -127,6 +128,9 @@ module.exports = {
           toSendHtml += "<br><br><div class=\"gmail_extra\"><div class=\"gmail_quote\"><blockquote>" + req.body.oldEmail.fullBody.replace(/^/gm, '<br> ') + "</blockquote></div></div>";
         }
 
+        if (req.body.to.length === 1) {
+          body = body + '<br /><br /><a href="' + config.webUrl + '/optout/' + req.body.to[0] + '">Disiscriviti dal nostro sistema</a>';
+        }
         email.account = req.params.accountId;
         email.uuid = uuidv4();
         email.oldId = req.body.oldEmail && req.body.oldEmail.id;

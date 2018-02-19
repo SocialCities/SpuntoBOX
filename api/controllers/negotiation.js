@@ -140,6 +140,7 @@ module.exports = {
         }
       }).then((nego) => {
         negot = nego;
+        body = body + '<br /><br /><a href="' + config.webUrl + '/optout/' + negotiation.guest.email + '">Disiscriviti dal nostro sistema</a>';
         email.negotiation = negotiationId || negotiation.id || nego.id;
         email.account = req.params.account;
         email.body = htmlToText.fromString(body);
