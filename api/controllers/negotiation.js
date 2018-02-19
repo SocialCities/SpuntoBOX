@@ -49,6 +49,8 @@ module.exports = {
           toSend += "\n\n" + previousEmail.fullBody.replace(/^/gm, '\n> ');
           toSendHtml += "<br><br><div class=\"gmail_extra\"><div class=\"gmail_quote\"><blockquote>" + previousEmail.fullBody.replace(/^/gm, '<br> ') + "</blockquote></div></div>";
         }
+        toSendHtml = toSendHtml + '<br /><br /><a href="' + config.webUrl + '/optout/' + customer.id + '">Disiscriviti dal nostro sistema</a>';
+
         email.negotiation = nego.id;
         email.account = req.params.account;
         email.body = parsedBody;
@@ -124,7 +126,9 @@ module.exports = {
       let email = {};
       let groups = {};
       let negot;
+      let custo;
       Model.customers.findOne({email: negotiation.guest.email, account: req.params.account}).then((customer) => {
+        custo = customer;
         if (customer.group) {
           groups[customer.group] = true;
         }
@@ -140,7 +144,7 @@ module.exports = {
         }
       }).then((nego) => {
         negot = nego;
-        body = body + '<br /><br /><a href="' + config.webUrl + '/optout/' + negotiation.guest.email + '">Disiscriviti dal nostro sistema</a>';
+        body = body + '<br /><br /><a href="' + config.webUrl + '/optout/' + custo.id + '">Disiscriviti dal nostro sistema</a>';
         email.negotiation = negotiationId || negotiation.id || nego.id;
         email.account = req.params.account;
         email.body = htmlToText.fromString(body);

@@ -66,10 +66,12 @@ module.exports = {
       emails = emails.concat(req.body.bcc || []);
       let groups = {};
       let toAdd = {};
+      let custId = false;
       Model.customers.find({email: emails, account: req.params.accountId}).then((customers) => {
         customers.forEach((c) => {
           if (c.group) groups[c.group] = true;
         });
+        
         console.log('looking for customers')
         emails.forEach(e => {
           console.log('looking for customer: ', e)
@@ -77,6 +79,7 @@ module.exports = {
           customers.forEach(c => {
             if (e === c.email) {
               console.log('customer found: ', e);
+              custId = c.id;
               found = true;
             }
           });
@@ -84,7 +87,7 @@ module.exports = {
             console.log('customer not found: ', e)
             addCustomer(e, req.params.accountId);
           }
-        })
+        });
         console.log('contentHtml', req.body.contentHtml);
         console.log(htmlToText.fromString(req.body.contentHtml));
         let body = req.body.contentHtml;
@@ -99,6 +102,7 @@ module.exports = {
           customers.forEach((c) => {
             if (emailToFind === c.email) {
               cust = {
+                id: c.id,
                 nome: c.name,
                 cognome: c.surname
               };
@@ -129,7 +133,7 @@ module.exports = {
         }
 
         if (req.body.to.length === 1) {
-          body = body + '<br /><br /><a href="' + config.webUrl + '/optout/' + req.body.to[0] + '">Disiscriviti dal nostro sistema</a>';
+          body = body + '<br /><br /><a href="' + config.webUrl + '/optout/' + custId + '">Disiscriviti dal nostro sistema</a>';
         }
         email.account = req.params.accountId;
         email.uuid = uuidv4();
