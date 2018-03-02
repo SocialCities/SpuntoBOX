@@ -8,7 +8,7 @@ module.exports = {
       Model.customers.findOne({id: req.params.customer, account: req.params.account}).then(c => {
         response.customer = c;
 
-        return Model.mails.find({client: c.id, account: req.params.account, negotiation: null}).sort('createdAt DESC').limit(5);
+        return Model.mails.find({client: c.id, account: req.params.account, negotiation: null}).sort('createdAt DESC').limit(3);
       }).then(emails => {
         response.emails = emails.map(e => {
           return {
@@ -18,19 +18,42 @@ module.exports = {
             date: e.date
           }
         });
+      
+        return Model.mails.count({to: response.customer.email, account: req.params.account, negotiation: null});
+      }).then(emailCount => {
+        response.sentEmails = emailCount;
+
+        return Model.mails.count({client: response.customer.id, account: req.params.account, negotiation: null});
+      }).then(emailCount => {
+        response.receivedEmails = emailCount;
 
         return Model.negotiations.find({client: req.params.customer, account: req.params.account}).sort('updatedAt DESC');
       }).then(negotiations => {
         response.negotiations = {
           active: false,
-          closed: 0
+          closed: 0,
+          history: [],
+          current: false
         };
         negotiations.forEach(n => {
           if (n.status === 'pending'){
+            response.negotiations.current = n;
             response.negotiations.active = true;
           } else {
+            if (n.type === 'checkin') {
+              response.negotiations.history.push({
+                date: n.updatedAt,
+                esito: 'Positivo'
+              });
+            } else {
+              response.negotiations.history.push({
+                date: n.updatedAt,
+                esito: 'Negativo'
+              });
+            }
             response.negotiations.closed += 1;
           }
+
         });
 
         return Model.interviewscustomers.find({customer: req.params.customer, account: req.params.account});

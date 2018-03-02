@@ -236,7 +236,21 @@ module.exports = {
     'patch /:account/:negotiation/archive': [function(req, res, next) {
       let nego;
       Model.negotiations.findOne({account: req.params.account, id: req.params.negotiation}).then((negotiation) => {
-        negotiation.type = 'chiusa';
+        negotiation.type = 'persa';
+        negotiation.status = 'closed';
+        
+        nego = negotiation;
+        return negotiation.save();
+      }).then((customer) => {
+        res.send(nego);
+      }).catch((err) => {
+        console.log('customers Error', err);
+      })
+    }],
+    'patch /:account/:negotiation/checkin': [function(req, res, next) {
+      let nego;
+      Model.negotiations.findOne({account: req.params.account, id: req.params.negotiation}).then((negotiation) => {
+        negotiation.type = 'checkin';
         negotiation.status = 'closed';
         
         nego = negotiation;
