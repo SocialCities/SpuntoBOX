@@ -43,6 +43,15 @@ class MailImporter {
   saveMail(account, mail, negotiation) {
     let savedMail;
     return Model.customers.findOne({account: account.id, email: mail.from.address}).then((customer) => {
+      if (!customer) {
+        return Model.customers.create({account: account.id, email: mail.from.address, name: mail.from.name, group: 'contatto'});
+      } else {
+        return new Promise((resolve, reject) => {
+          resolve(customer);
+        });
+      }
+    }).then(customer => {
+
       let groups = {};
       if (customer) {
         mail.client = customer.id

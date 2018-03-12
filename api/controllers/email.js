@@ -67,11 +67,44 @@ module.exports = {
       let groups = {};
       let toAdd = {};
       let custId = false;
+      let emailTo = [];
+      let emailCc = [];
+      let emailBcc = [];
       Model.customers.find({email: emails, account: req.params.accountId}).then((customers) => {
+        console.log('CUSTOMERS', customers);
         customers.forEach((c) => {
           if (c.group) groups[c.group] = true;
         });
         
+        emailTo = (req.body.to || []).map(e => {
+          let em = e;
+          customers.forEach(c => {
+            if (e === c.email) {
+              em = `${c.name} ${c.surname} <${c.email}>`;
+            }
+          });
+          return em;
+        });
+        emailCc = (req.body.cc || []).map(e => {
+          let em = e;
+          customers.forEach(c => {
+            if (e === c.email) {
+              em = `${c.name} ${c.surname} <${c.email}>`;
+            }
+          });
+          return em;
+        });
+
+        emailBcc = (req.body.bcc || []).map(e => {
+          let em = e;
+          customers.forEach(c => {
+            if (e === c.email) {
+              em = `${c.name} ${c.surname} <${c.email}>`;
+            }
+          });
+          return em;
+        });
+
         console.log('looking for customers')
         emails.forEach(e => {
           console.log('looking for customer: ', e)
@@ -157,7 +190,11 @@ module.exports = {
         return Model.accounts.findOne(req.params.accountId);
       }).then((account) => {
         email.from = account.email;
-        return Service.Mail.sendEmail(email, account.smtp);
+        let emailToSend = JSON.parse(JSON.stringify(email));
+        emailToSend.to = emailTo;
+        emailToSend.cc = emailCc;
+        emailToSend.bcc = emailBcc;
+        return Service.Mail.sendEmail(emailToSend, account.smtp);
       }).then((receipt) => {
         if (req.body.oldEmail && req.body.oldEmail.id) {
           Model.mails.update({account: req.params.accountId, id: req.body.oldEmail.id}, {status: 'orange'}).then((st) => {

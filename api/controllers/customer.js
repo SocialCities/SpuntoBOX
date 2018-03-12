@@ -98,7 +98,7 @@ module.exports = {
 
         Service.Mail.sendEmail({
           from: account.email,
-          to: [customer.email],
+          to: [`${customer.name} ${customer.surname} <${customer.email}>`],
           subject: 'Sei stato aggiunto al nostro sistema SpuntoBox',
           body: 'Ti informiamo che sei stato aggiunto al nostro sistema Spuntobox',
           bodyHTML: 'Ti informiamo che sei stato aggiunto al nostro sistema Spuntobox',
