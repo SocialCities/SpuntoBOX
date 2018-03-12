@@ -25,6 +25,7 @@ module.exports = {
       let groups = {};
       let nego;
       let previousEmail = false;
+      let cus;
       Model.negotiations.findOne({id: req.params.negotiation}).then(negotiation => {
         nego = negotiation;
         return Model.mails.find({negotiation: negotiation.id}).limit(1).sort('createdAt DESC')
@@ -32,6 +33,7 @@ module.exports = {
         previousEmail = mail.length === 1 ? mail[0] : false;
         return Model.customers.findOne({id: nego.client, account: req.params.account});
       }).then(customer => {
+        cus = customer;
         if (customer.group) {
           groups[customer.group] = true;
         }
@@ -70,7 +72,9 @@ module.exports = {
         return Model.accounts.findOne(req.params.account);
       }).then((account) => {
         email.from = account.email;
-        return Service.Mail.sendEmail(email, account.smtp);
+        let emailToSend = JSON.parse(JSON.stringify(email));
+        emailToSend.to = `${cus.name} ${cus.surname} <${cus.email}>`;
+        return Service.Mail.sendEmail(emailToSend, account.smtp);
       }).then((receipt) => {
         email.log = receipt;
         return Model.mails.create(email);
@@ -162,7 +166,9 @@ module.exports = {
         return Model.accounts.findOne(req.params.account);
       }).then((account) => {
         email.from = account.email;
-        return Service.Mail.sendEmail(email, account.smtp);
+        let emailToSend = JSON.parse(JSON.stringify(email));
+        emailToSend.to = `${custo.name} ${custo.surname} <${custo.email}>`;
+        return Service.Mail.sendEmail(emailToSend, account.smtp);
       }).then((receipt) => {
         email.log = receipt;
         return Model.mails.create(email);

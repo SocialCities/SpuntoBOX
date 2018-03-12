@@ -46,7 +46,7 @@ class CronCheckinInterview {
       let content = this.getEmail(checkin, checkin.email, results[1] || checkin.guests[0], results[2]);
       let email = {
         from: results[0].email,
-        to: checkin.guests[0].email,
+        to: `${checkin.guests[0].name} ${checkin.guests[0].surname} <${checkin.guests[0].email}>`,
         subject: 'Intervista hotel',
         bodyHTML: content
       };
