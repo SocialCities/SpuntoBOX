@@ -134,6 +134,7 @@ module.exports = {
 
         if (req.body.to.length === 1) {
           body = body + '<br /><br /><a href="' + config.webUrl + '/optout/' + custId + '">Disiscriviti dal nostro sistema</a>';
+	  toSendHtml = toSendHtml + '<br /><br /><a href="' + config.webUrl + '/optout/' + custId + '">Disiscriviti dal nostro sistema</a>';
         }
         email.account = req.params.accountId;
         email.uuid = uuidv4();
