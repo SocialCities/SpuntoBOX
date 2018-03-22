@@ -194,6 +194,9 @@ module.exports = {
         emailToSend.to = emailTo;
         emailToSend.cc = emailCc;
         emailToSend.bcc = emailBcc;
+        if (account.firma && req.body.firma) {
+          emailToSend.bodyToSendHtml = emailToSend.bodyToSendHtml + '<br /><br />-----------<br />' + account.firma;
+        }
         return Service.Mail.sendEmail(emailToSend, account.smtp);
       }).then((receipt) => {
         if (req.body.oldEmail && req.body.oldEmail.id) {
