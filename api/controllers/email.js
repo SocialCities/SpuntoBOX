@@ -4,7 +4,13 @@ var Mustache = require("mustache")
 var path = require("path");
 var uuidv4 = require('uuid/v4');
 var config = require('axolot/config/config');
-
+function nl2br (str, is_xhtml) {
+  if (typeof str === 'undefined' || str === null) {
+      return '';
+  }
+  var breakTag = (is_xhtml || typeof is_xhtml === 'undefined') ? '<br />' : '<br>';
+  return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + breakTag + '$2');
+}
 function addCustomer(e, account) {
   console.log('add fucking customer')
   Model.customers.create({email: e, account: account}).then((em) => {
@@ -195,8 +201,11 @@ module.exports = {
         emailToSend.to = emailTo;
         emailToSend.cc = emailCc;
         emailToSend.bcc = emailBcc;
+        console.log('afirma', account.firma)
+        console.log('bfirma', req.body.firma)
         if (account.firma && req.body.firma) {
-          emailToSend.bodyToSendHtml = emailToSend.bodyToSendHtml + '<br /><br />-----------<br />' + account.firma;
+          emailToSend.bodyToSendHtml = emailToSend.bodyToSend + "\n\n-----------\n" + account.firma;
+          emailToSend.bodyToSendHtml = emailToSend.bodyToSendHtml + '<br /><br />-----------<br />' + nl2br(account.firma);
         }
         return Service.Mail.sendEmail(emailToSend, account.smtp);
       }).then((receipt) => {
@@ -342,7 +351,14 @@ module.exports = {
         console.log('mails Error', err);
       })
     }],
-    
+    'delete /:accountId/:mailId/drafts': [function (req, res, next) {
+      Model.drafts.destroy({account: req.params.accountId, id: req.params.mailId}).then((mail) => {
+        res.send(mail);
+      }).catch((err) => {
+        console.log('mails Error', err);
+      })
+    }],
+
     'delete /:accountId/:mailId': [function (req, res, next) {
       Model.mails.destroy({account: req.params.accountId, id: req.params.mailId}).then((mail) => {
         res.send(mail);
