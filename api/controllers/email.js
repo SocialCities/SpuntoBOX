@@ -12,9 +12,16 @@ function nl2br (str, is_xhtml) {
   return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + breakTag + '$2');
 }
 function addCustomer(e, account) {
-  console.log('add fucking customer')
   Model.customers.create({email: e, account: account}).then((em) => {
-    console.log(em)
+    console.log(em);
+    if (account.optinout && account.optinout.optin)
+    Service.Mail.sendEmail({
+      from: account.email,
+      to: [`${em.email}`],
+      subject: 'Sei stato aggiunto al nostro sistema SpuntoBox',
+      bodyHTML: account.optinout.optin,
+      date: new Date()
+    }, account.smtp);
   }).catch(err => {
     console.log('err', err)
   })
