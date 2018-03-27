@@ -19,7 +19,7 @@ function addCustomer(e, accountId) {
     if (account.optinout && account.optinout.optin)
     Service.Mail.sendEmail({
       from: account.email,
-      to: [`${em.email}`],
+      to: [`${e}`],
       subject: 'Sei stato aggiunto al nostro sistema SpuntoBox',
       bodyHTML: account.optinout.optin,
       date: new Date()
