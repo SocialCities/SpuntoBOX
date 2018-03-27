@@ -11,9 +11,11 @@ function nl2br (str, is_xhtml) {
   var breakTag = (is_xhtml || typeof is_xhtml === 'undefined') ? '<br />' : '<br>';
   return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + breakTag + '$2');
 }
-function addCustomer(e, account) {
-  Model.customers.create({email: e, account: account}).then((em) => {
+function addCustomer(e, accountId) {
+  Model.customers.create({email: e, account: accountId}).then((em) => {
     console.log(em);
+    return Model.accounts.findOne(accountId);
+  }).then(account => {
     if (account.optinout && account.optinout.optin)
     Service.Mail.sendEmail({
       from: account.email,
