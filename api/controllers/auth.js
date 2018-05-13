@@ -83,7 +83,7 @@ module.exports = {
         console.log('cust', cust)
         return user.save();
       }).then((us) => {
-        return Model.accounts.find({select: ['id', 'name', 'email'], where: {id: cust.accounts}})
+        return Model.accounts.find({select: ['id', 'name', 'email', 'trattative', 'trattamento', 'interviste', 'tripadvisor', 'optinout'], where: {id: cust.accounts}})
       }).then((accounts) => {
         cust.accounts = accounts
         res.send(cust);
@@ -97,7 +97,7 @@ module.exports = {
       let u;
       Model.users.findOne(req.user).then((user) => {
         u = user;
-        return Model.accounts.find({select: ['id', 'name', 'email'], where: {id: user.accounts}})
+        return Model.accounts.find({select: ['id', 'name', 'email', 'trattative', 'trattamento', 'interviste', 'tripadvisor', 'optinout'], where: {id: user.accounts}})
       }).then((accounts) => {
         u.accounts = accounts
         res.send(u);

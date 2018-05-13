@@ -13,6 +13,9 @@ module.exports = {
     accounts: { type: 'array'},
     
     validPassword: function (password, cb) {
+      Service.crypt.generate({ saltComplexity: 10 }, password, function (err, hash) {
+        console.log('hash', hash);
+      });
       Service.crypt.compare(password, this.password, function (error, response) {
         if (error) return cb(error, response);
         return cb(null, response);
