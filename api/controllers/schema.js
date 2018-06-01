@@ -25,7 +25,9 @@ module.exports = {
       }
 
       field.name = req.body.title;
-
+      if (req.body.group) {
+        field.group = req.body.group;
+      }
       field.account = req.params.account;
       field.schemaType = req.params.schemaType;
       if (req.body.fisc === true) {
