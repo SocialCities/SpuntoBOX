@@ -9,7 +9,9 @@ class SchemaCreator {
         fields.forEach((field) => {
           const fieldName = this._camelize(field.name);
           let obj = {
-            title: field.name
+            title: field.name,
+            group: field.group,
+            widget: field.widget
           };
 
           if (field.type === 'date') {
@@ -21,6 +23,10 @@ class SchemaCreator {
 
           if (field.type === 'checkbox') {
             obj.type = 'boolean';
+          }
+          if (field.type === 'number') {
+            obj.type = 'string';
+            obj.numeric = true;
           }
           
           if (field.enum && field.enum.length > 0) {

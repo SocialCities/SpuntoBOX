@@ -20,6 +20,29 @@ module.exports = {
         field.type = 'string';
       }
 
+      if (req.body.type === 'date') {
+        field.type = 'date';
+      }
+
+      if (req.body.type === 'textarea') {
+        field.type = 'string';
+        field.widget = 'textarea';
+      }
+
+      if (req.body.type === 'number') {
+        field.type = 'number';
+      }
+
+      if (req.body.type === 'radio') {
+        field.type = 'string';
+        field.widget = 'radio';
+      }
+
+      if (req.body.type === 'select') {
+        field.type = 'string';
+        field.widget = 'select';
+      }
+
       if (req.body.type === 'boolean') {
         field.type = 'checkbox';
       }

@@ -8,9 +8,10 @@ module.exports = {
     name: { type: 'string' },
     pattern: {type: 'string'},
     schemaType: { type: 'string', enum: ['customer']},
-    type: { type: 'string', enum: ['string', 'checkbox', 'date']},
+    type: { type: 'string', enum: ['string', 'checkbox', 'date', 'number']},
     enum: { type: 'array'},
     required: { type: 'boolean', defaultsTo: false},
-    group: {type: 'string'}
+    group: {type: 'string'},
+    widget: {type: 'string'}
   }
 };
