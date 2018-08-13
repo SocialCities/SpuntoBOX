@@ -33,7 +33,7 @@ module.exports = {
   path: '/emails',
   actions: {
     'get /image/:id': [function(req, res, next) {
-      Model.mails.update({id: req.params.id}, {status: 'green'}).then((st) => {
+      Model.mails.update({uuid: req.params.id}, {status: 'green'}).then((st) => {
         res.sendFile(__dirname + '/transparent.png');
       }).catch((err) => {
         console.log('updatedEmail Error', err);
@@ -172,20 +172,21 @@ module.exports = {
         });
 
         let parsedBody = htmlToText.fromString(body);
-        let fullBody = parsedBody;
-        let toSend = parsedBody;
-        let toSendHtml = body;
+        let fullBody = (' ' + parsedBody).slice(1);
+        let toSend = (' ' + parsedBody).slice(1);
+        let toSendHtml = (' ' + body).slice(1);
         if (req.body.oldEmail && req.body.oldEmail.fullBody) {
           toSend += "\n\n" + req.body.oldEmail.fullBody.replace(/^/gm, '\n> ');
           toSendHtml += "<br><br><div class=\"gmail_extra\"><div class=\"gmail_quote\"><blockquote>" + req.body.oldEmail.fullBody.replace(/^/gm, '<br> ') + "</blockquote></div></div>";
         }
-
-        if (req.body.to.length === 1) {
-          body = body + '<br /><br /><a href="' + config.webUrl + '/optout/' + custId + '">Disiscriviti dal nostro sistema</a>';
-	  toSendHtml = toSendHtml + '<br /><br /><a href="' + config.webUrl + '/optout/' + custId + '">Disiscriviti dal nostro sistema</a>';
-        }
-        email.account = req.params.accountId;
         email.uuid = uuidv4();
+        console.log('body length', req.body.to.length)
+        if (req.body.to.length === 1) {
+          body = body + '<br /><br /><a href="' + config.webUrl + '/optout/' + custId + '">Disiscriviti dal nostro sistema</a><br /><img src="' + config.apiUrl + '/emails/image/' + email.uuid + '" />';
+	  toSendHtml = toSendHtml + '<br /><br /><a href="' + config.webUrl + '/optout/' + custId + '">Disiscriviti dal nostro sistema</a><br /><img src="' + config.apiUrl + '/emails/image/' + email.uuid + '" />';
+        }
+        console.log('to send', toSendHtml);
+        email.account = req.params.accountId;
         email.oldId = req.body.oldEmail && req.body.oldEmail.id;
         email.body = parsedBody;
         email.fullBody = fullBody;
@@ -213,7 +214,7 @@ module.exports = {
         console.log('afirma', account.firma)
         console.log('bfirma', req.body.firma)
         if (account.firma && req.body.firma) {
-          emailToSend.bodyToSendHtml = emailToSend.bodyToSend + "\n\n-----------\n" + account.firma;
+          emailToSend.bodyToSend = emailToSend.bodyToSend + "\n\n-----------\n" + account.firma;
           emailToSend.bodyToSendHtml = emailToSend.bodyToSendHtml + '<br /><br />-----------<br />' + nl2br(account.firma);
         }
         return Service.Mail.sendEmail(emailToSend, account.smtp);

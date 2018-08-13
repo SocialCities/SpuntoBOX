@@ -27,23 +27,24 @@ module.exports = {
     transporter.use('compile', htmlToText());
     console.log('email', email)
     return new Promise((res, rej) => {
-      transporter.sendMail({
-        from: email.from,
-        to: email.to,
-        cc: email.cc,
-        bcc: email.bcc,
-        text: email.bodyToSend,
-        html: (email.bodyToSendHtml || email.bodyHTML || email.body) + (email.oldId ? '<img src="' + mainConfig.apiUrl + '/emails/image/' + email.oldId + '" />' : ''),
-        subject: email.subject,
-        headers: {"Content-Transfer-Encoding": "quoted-printable"},
-        attachments: (email.attachments || []).map(a => {
-            return {   // file on disk as an attachment
-                filename: a.filename,
-                path: path.join(mainConfig.upload.path, a.savedFile) // stream this file
-            };
-        }),
-        emcoding: 'quoted-printable'
-      }, (value, err) => {
+        let mail = {
+            from: email.from,
+            to: email.to,
+            cc: email.cc,
+            bcc: email.bcc,
+            text: email.bodyToSend,
+            html: (email.bodyToSendHtml || email.bodyHTML || email.body) + (email.oldId ? '<img src="' + mainConfig.apiUrl + '/emails/image/' + email.oldId + '" />' : ''),
+            subject: email.subject,
+            headers: {"Content-Transfer-Encoding": "quoted-printable"},
+            attachments: (email.attachments || []).map(a => {
+                return {   // file on disk as an attachment
+                    filename: a.filename,
+                    path: path.join(mainConfig.upload.path, a.savedFile) // stream this file
+                };
+            }),
+            encoding: 'quoted-printable'
+          };
+      transporter.sendMail(mail, (value, err) => {
           console.log(value)
           console.log(err)
         if (err && !err.messageId) return rej(err);
