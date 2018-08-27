@@ -10,7 +10,7 @@ module.exports = {
         
         return customer.save();
       }).then((customer) => {
-        res.send('Ora non sei piu\' iscritto al sistema SpuntoBox');
+        res.send(account.optinout && account.optinout.optout || 'Ora non sei piu\' iscritto al sistema SpuntoBox');
       }).catch((err) => {
         console.log('customers Error', err);
       })
@@ -99,7 +99,7 @@ module.exports = {
         Service.Mail.sendEmail({
           from: account.email,
           to: [`${customer.name} ${customer.surname} <${customer.email}>`],
-          subject: 'Sei stato aggiunto al nostro sistema SpuntoBox',
+          subject: account.optinout && account.optinout.optintitle || 'Sei stato aggiunto al nostro sistema SpuntoBox',
           bodyHTML: account.optinout.optin,
           date: new Date()
         }, account.smtp);

@@ -180,11 +180,11 @@ module.exports = {
           toSendHtml += "<br><br><div class=\"gmail_extra\"><div class=\"gmail_quote\"><blockquote>" + req.body.oldEmail.fullBody.replace(/^/gm, '<br> ') + "</blockquote></div></div>";
         }
         email.uuid = uuidv4();
-        console.log('body length', req.body.to.length)
-        if (req.body.to.length === 1) {
-          body = body + '<br /><br /><a href="' + config.webUrl + '/optout/' + custId + '">Disiscriviti dal nostro sistema</a><br /><img src="' + config.apiUrl + '/emails/image/' + email.uuid + '" />';
-	  toSendHtml = toSendHtml + '<br /><br /><a href="' + config.webUrl + '/optout/' + custId + '">Disiscriviti dal nostro sistema</a><br /><img src="' + config.apiUrl + '/emails/image/' + email.uuid + '" />';
-        }
+        // console.log('body length', req.body.to.length)
+        // if (req.body.to.length === 1) {
+        //   body = body + '<br /><br /><a href="' + config.webUrl + '/optout/' + custId + '">Disiscriviti dal nostro sistema</a><br /><img src="' + config.apiUrl + '/emails/image/' + email.uuid + '" />';
+	      //   toSendHtml = toSendHtml + '<br /><br /><a href="' + config.webUrl + '/optout/' + custId + '">Disiscriviti dal nostro sistema</a><br /><img src="' + config.apiUrl + '/emails/image/' + email.uuid + '" />';
+        // }
         console.log('to send', toSendHtml);
         email.account = req.params.accountId;
         email.oldId = req.body.oldEmail && req.body.oldEmail.id;
@@ -213,9 +213,30 @@ module.exports = {
         emailToSend.bcc = emailBcc;
         console.log('afirma', account.firma)
         console.log('bfirma', req.body.firma)
+
         if (account.firma && req.body.firma) {
-          emailToSend.bodyToSend = emailToSend.bodyToSend + "\n\n-----------\n" + account.firma;
-          emailToSend.bodyToSendHtml = emailToSend.bodyToSendHtml + '<br /><br />-----------<br />' + nl2br(account.firma);
+          console.log('firma, account.firma')
+          let hasLink = checkMustache(account.firma || "", 'optoutlink');
+          let firma = account.firma;
+          let link = (account.optinout && account.optinout.optoutlink || "");
+            if (link && link !== "") {
+              link = '<a href="' + config.webUrl + '/optout/' + custId + '">'+link+'</a>';
+            }
+          if (hasLink) {
+            firma = Mustache.render(firma, {optoutlink: link});
+          } else if (link && link !== "") {
+            firma = firma + "<br />" + link
+          }
+          emailToSend.bodyToSend = emailToSend.bodyToSend + "\n\n-----------\n" + firma;
+          emailToSend.bodyToSendHtml = emailToSend.bodyToSendHtml + '<br /><br />-----------<br />' + nl2br(firma);
+        }
+        else {
+            let link = (account.optinout && account.optinout.optoutlink || "");
+            if (link && link !== "") {
+              link = '<a href="' + config.webUrl + '/optout/' + custId + '">'+link+'</a>';
+              emailToSend.bodyToSend = emailToSend.bodyToSend + "\n\n-----------\n" + link;
+              emailToSend.bodyToSendHtml = emailToSend.bodyToSendHtml + '<br /><br />-----------<br />' + nl2br(link);
+            }
         }
         return Service.Mail.sendEmail(emailToSend, account.smtp);
       }).then((receipt) => {
@@ -437,4 +458,10 @@ function forEachPromise(items, fn, context) {
             return fn(item, context);
         });
     }, Promise.resolve());
+}
+
+function checkMustache(str, toFind) {
+  let find = str.match(/{{\s*[\w\.]+\s*}}/g);
+  if (!find) return false;
+  return find.map(function(x) { return x.match(/[\w\.]+/)[0]; }).indexOf(toFind) !== -1;
 }

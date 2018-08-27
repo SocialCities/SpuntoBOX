@@ -51,7 +51,7 @@ module.exports = {
           toSend += "\n\n" + previousEmail.fullBody.replace(/^/gm, '\n> ');
           toSendHtml += "<br><br><div class=\"gmail_extra\"><div class=\"gmail_quote\"><blockquote>" + previousEmail.fullBody.replace(/^/gm, '<br> ') + "</blockquote></div></div>";
         }
-        toSendHtml = toSendHtml + '<br /><br /><a href="' + config.webUrl + '/optout/' + customer.id + '">Disiscriviti dal nostro sistema</a>';
+        // toSendHtml = toSendHtml + '<br /><br /><a href="' + config.webUrl + '/optout/' + customer.id + '">Disiscriviti dal nostro sistema</a>';
 
         email.negotiation = nego.id;
         email.account = req.params.account;
@@ -74,6 +74,31 @@ module.exports = {
         email.from = account.email;
         let emailToSend = JSON.parse(JSON.stringify(email));
         emailToSend.to = `${cus.name} ${cus.surname} <${cus.email}>`;
+        if (account.firma && req.body.firma) {
+          console.log('firma, account.firma')
+          let hasLink = checkMustache(account.firma || "", 'optoutlink');
+          let firma = account.firma;
+          let link = (account.optinout && account.optinout.optoutlink || "");
+            if (link && link !== "") {
+              link = '<a href="' + config.webUrl + '/optout/' + cus.id + '">'+link+'</a>';
+            }
+          if (hasLink) {
+            firma = Mustache.render(firma, {optoutlink: link});
+          } else if (link && link !== "") {
+            firma = firma + "<br />" + link
+          }
+          emailToSend.bodyToSend = emailToSend.bodyToSend + "\n\n-----------\n" + firma;
+          emailToSend.bodyToSendHtml = emailToSend.bodyToSendHtml + '<br /><br />-----------<br />' + nl2br(firma);
+        }
+        else {
+            let link = (account.optinout && account.optinout.optoutlink || "");
+            if (link && link !== "") {
+              link = '<a href="' + config.webUrl + '/optout/' + cus.id + '">'+link+'</a>';
+              emailToSend.bodyToSend = emailToSend.bodyToSend + "\n\n-----------\n" + link;
+              emailToSend.bodyToSendHtml = emailToSend.bodyToSendHtml + '<br /><br />-----------<br />' + nl2br(link);
+            }
+        }
+
         return Service.Mail.sendEmail(emailToSend, account.smtp);
       }).then((receipt) => {
         email.log = receipt;
@@ -148,7 +173,7 @@ module.exports = {
         }
       }).then((nego) => {
         negot = nego;
-        body = body + '<br /><br /><a href="' + config.webUrl + '/optout/' + custo.id + '">Disiscriviti dal nostro sistema</a>';
+        // body = body + '<br /><br /><a href="' + config.webUrl + '/optout/' + custo.id + '">Disiscriviti dal nostro sistema</a>';
         email.negotiation = negotiationId || negotiation.id || nego.id;
         email.account = req.params.account;
         email.body = htmlToText.fromString(body);
@@ -168,6 +193,31 @@ module.exports = {
         email.from = account.email;
         let emailToSend = JSON.parse(JSON.stringify(email));
         emailToSend.to = `${custo.name} ${custo.surname} <${custo.email}>`;
+
+        if (account.firma && req.body.firma) {
+          console.log('firma, account.firma')
+          let hasLink = checkMustache(account.firma || "", 'optoutlink');
+          let firma = account.firma;
+          let link = (account.optinout && account.optinout.optoutlink || "");
+            if (link && link !== "") {
+              link = '<a href="' + config.webUrl + '/optout/' + custo.id + '">'+link+'</a>';
+            }
+          if (hasLink) {
+            firma = Mustache.render(firma, {optoutlink: link});
+          } else if (link && link !== "") {
+            firma = firma + "<br />" + link
+          }
+          emailToSend.bodyToSend = emailToSend.bodyToSend + "\n\n-----------\n" + firma;
+          emailToSend.bodyToSendHtml = emailToSend.bodyToSendHtml + '<br /><br />-----------<br />' + nl2br(firma);
+        }
+        else {
+            let link = (account.optinout && account.optinout.optoutlink || "");
+            if (link && link !== "") {
+              link = '<a href="' + config.webUrl + '/optout/' + custo.id + '">'+link+'</a>';
+              emailToSend.bodyToSend = emailToSend.bodyToSend + "\n\n-----------\n" + link;
+              emailToSend.bodyToSendHtml = emailToSend.bodyToSendHtml + '<br /><br />-----------<br />' + nl2br(link);
+            }
+        }
         return Service.Mail.sendEmail(emailToSend, account.smtp);
       }).then((receipt) => {
         email.log = receipt;
@@ -289,3 +339,9 @@ module.exports = {
     },
   }
 };
+
+function checkMustache(str, toFind) {
+  let find = str.match(/{{\s*[\w\.]+\s*}}/g);
+  if (!find) return false;
+  return find.map(function(x) { return x.match(/[\w\.]+/)[0]; }).indexOf(toFind) !== -1;
+}
