@@ -89,6 +89,25 @@ module.exports = {
         console.log('checkin Error', err);
       })
     }],
+    'post /:account/segnala': [function(req, res, next) {
+      Model.accounts.findOne(req.params.account).then(account => {
+        let checkin = req.body;
+      Service.Mail.sendEmail({
+        from: account.email,
+        to: [`n.tizzano@spuntolab.it`],
+        cc: [`info@spuntolab.it`],
+        bcc: [`g@margalho.info`],
+        subject: "Segnalazione problema checkin" + checkin.checkin.id,
+        bodyHTML: checkin.text,
+        date: new Date()
+      }, account.smtp);
+      res.send({sent: true})
+      }).catch(e => {
+        console.log('err', e)
+        res.send({sent: e})
+      })
+      
+    }],
     'put /:account/:checkinId': [function(req, res, next) {
       let checkinData = req.body;
       checkinData.daysInterview = parseInt(checkinData.daysInterview || 0);

@@ -2,6 +2,23 @@
 var htmlToText = require('html-to-text');
 var Mustache = require("mustache")
 
+function customer2tag(c) {
+
+  let cust = {
+    id: c.id,
+    nome: c.name,
+    cognome: c.surname,
+    email: c.email,
+    cellulare: c.mobilePhone,
+    indirizzo: c.address,
+    civico: c.houseNumber,
+    citta: c.city,
+    nazione: c.country
+  };
+
+  return cust;
+}
+
 module.exports = {
   path: '/negotiations',
   actions: {
@@ -161,10 +178,7 @@ module.exports = {
         if (customer.group) {
           groups[customer.group] = true;
         }
-        let cust = {
-          nome: customer.name,
-          cognome: customer.surname
-        };
+        let cust = customer2tag(customer);
         body = Mustache.render(parsedEmail, {cliente: cust});
         if (req.body.id) {
           return Model.negotiations.update({id: negotiationId}, negotiation);

@@ -1,5 +1,5 @@
 'use strict';
-
+var get = require("lodash.get")
 module.exports = {
   path: '/customers',
   actions: {
@@ -10,7 +10,8 @@ module.exports = {
         
         return customer.save();
       }).then((customer) => {
-        res.send(account.optinout && account.optinout.optout || 'Ora non sei piu\' iscritto al sistema SpuntoBox');
+        
+        res.send(get(account, "optinout.optout."+ ((customer.language && customer.language.toLowerCase()) || "it")) || get(account, "optinout.optout.it") || 'Ora non sei piu\' iscritto al sistema SpuntoBox');
       }).catch((err) => {
         console.log('customers Error', err);
       })
@@ -95,12 +96,12 @@ module.exports = {
         res.send(customer);
         return Model.accounts.findOne(req.params.account);
       }).then((account) => {
-        if (account.optinout && account.optinout.optin)
+        if (get(account, "optinout.optin."+ ((customer.language && customer.language.toLowerCase()) || "it")) || get(account, "optinout.optin.it"))
         Service.Mail.sendEmail({
           from: account.email,
           to: [`${customer.name} ${customer.surname} <${customer.email}>`],
-          subject: account.optinout && account.optinout.optintitle || 'Sei stato aggiunto al nostro sistema SpuntoBox',
-          bodyHTML: account.optinout.optin,
+          subject: get(account, "optinout.optintitle."+ ((customer.language && customer.language.toLowerCase()) || "it")) || get(account, "optinout.optintitle.it") || 'Sei stato aggiunto al nostro sistema SpuntoBox',
+          bodyHTML: get(account, "optinout.optin."+ ((customer.language && customer.language.toLowerCase()) || "it")) || get(account, "optinout.optin.it"),
           date: new Date()
         }, account.smtp);
       }).catch((err) => {

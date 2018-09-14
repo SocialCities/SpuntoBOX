@@ -2,6 +2,23 @@ var cron = require('cron');
 var Mustache = require("mustache")
 var config = require('axolot/config/config');
 
+function customer2tag(c) {
+
+  let cust = {
+    id: c.id,
+    nome: c.name,
+    cognome: c.surname,
+    email: c.email,
+    cellulare: c.mobilePhone,
+    indirizzo: c.address,
+    civico: c.houseNumber,
+    citta: c.city,
+    nazione: c.country
+  };
+
+  return cust;
+}
+
 class CronCheckinInterview {
   constructor() {
     console.log('starting croncheckin')
@@ -62,10 +79,7 @@ class CronCheckinInterview {
   }
 
   getEmail(checkin, content, customer, interview) {
-    let cust = {
-      nome: customer.name,
-      cognome: customer.surname
-    };
+    let cust = customer2tag(customer);
 
     return Mustache.render(content, {cliente: cust, checkin: checkin, intervista: {link: config.webUrl + '/i/' + interview.id + '/' + customer.id + '/it'}});
   }

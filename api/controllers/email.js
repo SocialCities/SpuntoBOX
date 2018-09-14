@@ -4,6 +4,25 @@ var Mustache = require("mustache")
 var path = require("path");
 var uuidv4 = require('uuid/v4');
 var config = require('axolot/config/config');
+var get = require("lodash.get");
+
+function customer2tag(c) {
+
+  let cust = {
+    id: c.id,
+    nome: c.name,
+    cognome: c.surname,
+    email: c.email,
+    cellulare: c.mobilePhone,
+    indirizzo: c.address,
+    civico: c.houseNumber,
+    citta: c.city,
+    nazione: c.country
+  };
+
+  return cust;
+}
+
 function nl2br (str, is_xhtml) {
   if (typeof str === 'undefined' || str === null) {
       return '';
@@ -12,16 +31,18 @@ function nl2br (str, is_xhtml) {
   return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + breakTag + '$2');
 }
 function addCustomer(e, accountId) {
+  let customer = {email: e}
   Model.customers.create({email: e, account: accountId}).then((em) => {
     console.log(em);
+    customer = em;
     return Model.accounts.findOne(accountId);
   }).then(account => {
-    if (account.optinout && account.optinout.optin)
+    if (get(account, "optinout.optin."+ ((customer.language && customer.language.toLowerCase()) || "it")) || get(account, "optinout.optin.it"))
     Service.Mail.sendEmail({
       from: account.email,
       to: [`${e}`],
-      subject: 'Sei stato aggiunto al nostro sistema SpuntoBox',
-      bodyHTML: account.optinout.optin,
+      subject: get(account, "optinout.optintitle."+ ((customer.language && customer.language.toLowerCase()) || "it")) || get(account, "optinout.optintitle.it") || 'Sei stato aggiunto al nostro sistema SpuntoBox',
+      bodyHTML: get(account, "optinout.optin."+ ((customer.language && customer.language.toLowerCase()) || "it")) || get(account, "optinout.optin.it"),
       date: new Date()
     }, account.smtp);
   }).catch(err => {
@@ -149,11 +170,7 @@ module.exports = {
           let cust = false;
           customers.forEach((c) => {
             if (emailToFind === c.email) {
-              cust = {
-                id: c.id,
-                nome: c.name,
-                cognome: c.surname
-              };
+              cust = customer2tag(c)
             }
           });
           if (cust!== false) {

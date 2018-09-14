@@ -1,6 +1,23 @@
 'use strict';
 var Mustache = require("mustache")
 
+function customer2tag(c) {
+
+  let cust = {
+    id: c.id,
+    nome: c.name,
+    cognome: c.surname,
+    email: c.email,
+    cellulare: c.mobilePhone,
+    indirizzo: c.address,
+    civico: c.houseNumber,
+    citta: c.city,
+    nazione: c.country
+  };
+
+  return cust;
+}
+
 module.exports = {
   path: '/interviews',
   actions: {
@@ -22,10 +39,7 @@ module.exports = {
           let l = i.body[key]
           let cust = {}
           if (c) {
-            cust = {
-              nome: c.name,
-              cognome: c.surname
-            };
+            cust = customer2tag(c)
           }
           
           l.header = Mustache.render(l.header || '', {cliente: cust});
